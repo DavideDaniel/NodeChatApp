@@ -1,0 +1,88 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'node', '/usr/local/bin/npm', 'install', 'moments-cl', '--save' ]
+2 info using npm@2.1.7
+3 info using node@v0.10.33
+4 verbose node symlink /usr/local/bin/node
+5 warn package.json DChatApp@1.0.0 No description
+6 warn package.json DChatApp@1.0.0 No repository field.
+7 warn package.json DChatApp@1.0.0 No README data
+8 silly cache add args [ 'moments-cl', null ]
+9 verbose cache add spec moments-cl
+10 silly cache add parsed spec { raw: 'moments-cl',
+10 silly cache add   scope: null,
+10 silly cache add   name: 'moments-cl',
+10 silly cache add   rawSpec: '',
+10 silly cache add   spec: '*',
+10 silly cache add   type: 'range' }
+11 verbose addNamed moments-cl@*
+12 silly addNamed semver.valid null
+13 silly addNamed semver.validRange *
+14 silly addNameRange { name: 'moments-cl', range: '*', hasData: false }
+15 silly mapToRegistry name moments-cl
+16 silly mapToRegistry using default registry
+17 silly mapToRegistry registry https://registry.npmjs.org/
+18 silly mapToRegistry uri https://registry.npmjs.org/moments-cl
+19 verbose addNameRange registry:https://registry.npmjs.org/moments-cl not in flight; fetching
+20 verbose request uri https://registry.npmjs.org/moments-cl
+21 verbose request no auth needed
+22 info attempt registry request try #1 at 09:57:54
+23 verbose request id 7a29a47351bf0ccb
+24 http request GET https://registry.npmjs.org/moments-cl
+25 http 404 https://registry.npmjs.org/moments-cl
+26 verbose headers { date: 'Mon, 15 Dec 2014 14:54:56 GMT',
+26 verbose headers   server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+26 verbose headers   'content-type': 'application/json',
+26 verbose headers   'cache-control': 'max-age=0',
+26 verbose headers   'content-length': '52',
+26 verbose headers   'accept-ranges': 'bytes',
+26 verbose headers   via: '1.1 varnish',
+26 verbose headers   age: '0',
+26 verbose headers   'x-served-by': 'cache-jfk1023-JFK',
+26 verbose headers   'x-cache': 'MISS',
+26 verbose headers   'x-cache-hits': '0',
+26 verbose headers   'x-timer': 'S1418655296.124112,VS0,VE87',
+26 verbose headers   'keep-alive': 'timeout=10, max=50',
+26 verbose headers   connection: 'Keep-Alive' }
+27 silly get cb [ 404,
+27 silly get   { date: 'Mon, 15 Dec 2014 14:54:56 GMT',
+27 silly get     server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+27 silly get     'content-type': 'application/json',
+27 silly get     'cache-control': 'max-age=0',
+27 silly get     'content-length': '52',
+27 silly get     'accept-ranges': 'bytes',
+27 silly get     via: '1.1 varnish',
+27 silly get     age: '0',
+27 silly get     'x-served-by': 'cache-jfk1023-JFK',
+27 silly get     'x-cache': 'MISS',
+27 silly get     'x-cache-hits': '0',
+27 silly get     'x-timer': 'S1418655296.124112,VS0,VE87',
+27 silly get     'keep-alive': 'timeout=10, max=50',
+27 silly get     connection: 'Keep-Alive' } ]
+28 verbose stack Error: 404 Not Found: moments-cl
+28 verbose stack     at CachingRegistryClient.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:232:14)
+28 verbose stack     at Request._callback (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:172:14)
+28 verbose stack     at Request.self.callback (/usr/local/lib/node_modules/npm/node_modules/request/request.js:372:22)
+28 verbose stack     at Request.emit (events.js:98:17)
+28 verbose stack     at Request.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1310:14)
+28 verbose stack     at Request.emit (events.js:117:20)
+28 verbose stack     at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1258:12)
+28 verbose stack     at IncomingMessage.emit (events.js:117:20)
+28 verbose stack     at _stream_readable.js:943:16
+28 verbose stack     at process._tickCallback (node.js:419:13)
+29 verbose statusCode 404
+30 verbose pkgid moments-cl
+31 verbose cwd /Users/David/wdi/Server_Exercises/DChatApp
+32 error Darwin 14.0.0
+33 error argv "node" "/usr/local/bin/npm" "install" "moments-cl" "--save"
+34 error node v0.10.33
+35 error npm  v2.1.7
+36 error code E404
+37 error 404 Not Found: moments-cl
+37 error 404
+37 error 404 'moments-cl' is not in the npm registry.
+37 error 404 You should bug the author to publish it (or use the name yourself!)
+37 error 404 It was specified as a dependency of 'DChatApp'
+37 error 404
+37 error 404 Note that you can also install from a
+37 error 404 tarball, folder, http url, or git url.
+38 verbose exit [ 1, true ]
