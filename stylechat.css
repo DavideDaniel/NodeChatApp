@@ -33,7 +33,9 @@ p {
     display: flex;
 }
 .sidebar {
-    border: thick solid blue;
+    background-color: gray;
+    border: thin solid blue;
+    text-align: left;
     flex: .40;
     overflow-y: scroll;
 }

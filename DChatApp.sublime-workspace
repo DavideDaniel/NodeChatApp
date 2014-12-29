@@ -519,47 +519,6 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "dHTML.html",
-			"settings":
-			{
-				"buffer_size": 1146,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/David/wdi/Server_Exercises/AlexClient.html",
-			"settings":
-			{
-				"buffer_size": 6236,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/David/wdi/Server_Exercises/Alexserver.js",
-			"settings":
-			{
-				"buffer_size": 4179,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "/Users/David/wdi/Server_Exercises/Alexstyle.css",
-			"settings":
-			{
-				"buffer_size": 2179,
-				"line_ending": "Unix",
-				"name": "html {"
-			}
-		},
-		{
-			"file": "stylechat.css",
-			"settings":
-			{
-				"buffer_size": 1067,
-				"line_ending": "Unix"
-			}
-		}
 	],
 	"build_system": "",
 	"command_palette":
@@ -700,6 +659,10 @@
 	],
 	"file_history":
 	[
+		"/Users/David/wdi/Server_Exercises/DChatApp/stylechat.css",
+		"/Users/David/wdi/Server_Exercises/DChatApp/dHTML.html",
+		"/Users/David/wdi/Server_Exercises/DChatApp/Dclient.js",
+		"/Users/David/wdi/Server_Exercises/DChatApp/Dserver.js",
 		"/Users/David/wdi/Server_Exercises/DChatApp/client.js",
 		"/Users/David/wdi/Server_Exercises/DChatApp/server.js",
 		"/Users/David/wdi/Server_Exercises/fsServer.js",
@@ -708,13 +671,10 @@
 		"/Users/David/wdi/Server_Exercises/DChatApp/index.html",
 		"/Users/David/wdi/Server_Exercises/blahBlah.txt",
 		"/Users/David/wdi/Server_Exercises/html.js",
-		"/Users/David/wdi/Server_Exercises/DChatApp/dHTML.html",
 		"/Users/David/wdi/Server_Exercises/chatApp/testS.js",
 		"/Users/David/Desktop/chatAPP/server.js",
 		"/Users/David/wdi/Server_Exercises/Rachel/server.js",
 		"/Users/David/wdi/Server_Exercises/test.js",
-		"/Users/David/wdi/Server_Exercises/DChatApp/Dclient.js",
-		"/Users/David/wdi/Server_Exercises/DChatApp/Dserver.js",
 		"/Users/David/wdi/Server_Exercises/DChatApp/.gitignore",
 		"/Users/David/wdi/Server_Exercises/rachel/client.js",
 		"/Users/David/wdi/Server_Exercises/chatApp/.gitignore",
@@ -826,8 +786,7 @@
 		"/Users/David/wdi/w02/d02/review_w01.js",
 		"/Users/David/wdi/w01/d03/canvasloop.html",
 		"/Users/David/wdi/w03/d01/2",
-		"/Users/David/wdi/w03/d01/3",
-		"/Users/David/wdi/reviewJsArrMethods.js"
+		"/Users/David/wdi/w03/d01/3"
 	],
 	"find":
 	{
@@ -1002,157 +961,8 @@
 	"groups":
 	[
 		{
-			"selected": 1,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "dHTML.html",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1146,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								868,
-								868
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "/Users/David/wdi/Server_Exercises/AlexClient.html",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 6236,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								958,
-								958
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 248.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "/Users/David/wdi/Server_Exercises/Alexserver.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4179,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4179,
-								4179
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "/Users/David/wdi/Server_Exercises/Alexstyle.css",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2179,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2179,
-								2179
-							]
-						],
-						"settings":
-						{
-							"auto_name": "html {",
-							"syntax": "Packages/CSS/CSS.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 1051.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "stylechat.css",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1067,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								748,
-								748
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/CSS/CSS.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 286.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				}
 			]
 		}
 	],
