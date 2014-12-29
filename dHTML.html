@@ -3,66 +3,12 @@
     <head>
         <meta charset="UTF-8">
         <meta author = "David Daniel">
+        <link rel="stylesheet" type="text/css" href="stylechat.css">
         <title>Chat</title>
 
     </head>
     <style type="text/css">
-    * {
-    font-family: Helvetica, arial, sans-serif;
-    font-size: 14px;
-    margin: 0px;
-    }
-    p {
-    line-height: 18px;
-    }
-
-    .header{
-    background-color: #0a5ea2;
-    font-size: 30px;
-    text-align: center;
-    width: 800px;
-    margin: auto;
-    margin-top: 2%;
-    }
-    .container{
-    border:thick solid black;
-    height: 600px;
-    width: 800px;
-    display: flex;
-    margin: auto;
-    }
-    .inset{
-    border:thin solid red;
-    height: 600px;
-    flex: 2;
-    align-self: center;
-    display: flex;
-    }
-    .sidebar{
-    border:thick solid blue;
-    flex: .40;
-    overflow-y: scroll;
-    }
-    .input{
-    border:thick solid green;
-    height: 30px;
-    width: 800px;
-    display: flex;
-    margin: auto;
-    }
-    input {
-    flex: 2;
-    align-self: right;
-    }
-    #name{
-    border:thick solid yellow;
-    height: 200px;
-    width: 400px;
-
-    }
-    #chat{
-        list-style: none;
-    }
+    
     </style>
     <header>
         <div class="header"></div>
@@ -73,6 +19,11 @@
             <div class="sidebar" id="channels">
             </div>
             <div class="inset">
+                <div id = "fixed">
+                    <p> Please enter your screen name:</p>
+                            <input type="text" id="inputOne"></input>
+                            <a href="dHTML.html" class="button" id="login">Login</a>
+                </div>
                 <ul id="chat"></ul>
             </div>
             <div class="sidebar" id="usrs ">

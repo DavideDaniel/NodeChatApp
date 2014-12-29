@@ -11,23 +11,27 @@ var rgb = "rgb(" + r + ", " + g + ", " + b + ")"
 //User database - array to store incoming clients and to track when they leave as well
 var userDB = [];
 
-// //Channel constructor - level = privacy (1-1)
-// var Channel = function(name, pw, num, type){
-// 	this.type = "channel";
-// 	this.pw = pw;
-// 	this.userDB = [];
-// 	this.size = num;
-// 	this.join = 
-// 	this.create = function(){
-// 		if (){
-// 			user.DB.length = 10
-// 		}
-// 		else if (level==="2"){
-// 			user.DB
-// 		}
-// 	}
+//Channel constructor - level = privacy (1-1)
+  var Channel = function(name, pw, num, type){
+  	this.type = "channel";
+  	this.pw = pw;
+  	this.userDB = [];
+  	this.size = num;
+  	this.join = 
+  	this.create = function(){
+  		if (){
+  			user.DB.length = 10
+  		}
+  		else if (level==="2"){
+  			user.DB
+  		}
+  	}
 
-// }
+  }
+}
+
+
+
 
 
 //Message database - array to store chat history for new clients and alleviate FOMO ;)
