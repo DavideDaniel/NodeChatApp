@@ -9,7 +9,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "moment": "^2.8.4",
     "ws": "^0.6.3"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DavideDaniel/ChatAppv2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DavideDaniel/ChatAppv2/issues"
+  },
+  "homepage": "https://github.com/DavideDaniel/ChatAppv2"
 }
