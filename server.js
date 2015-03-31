@@ -1,143 +1,142 @@
-var WebSocketServer = require( "ws" )
-    .Server;
-var server = new WebSocketServer(
-{
-    port: 3000
+var WSS = require( 'ws' )
+	.Server;
+var server = new WSS( {
+	port: 3000
 } );
-//Random color generator for user colors
-var r = Math.floor( Math.random() * ( 255 - 100 ) );
-var g = Math.floor( Math.random() * ( 255 - 100 ) ); 
-var b = Math.floor( Math.random() * ( 255 - 100 ) );
-var rgb = "rgb(" + r + ", " + g + ", " + b + ")"
+
+// Message types - all as strings
+// enter = entering client object
+// msg = message from client object
+// whisper = private message
+
+console.log( "Server listening on port 3000" );
+var moment = require( 'moment' );
+var now = moment()
+	.format( 'MMM Do, h:mm a' );
+	console.log(now);
+var userDb = [];
+var i = 0;
+console.log( i );
+var msgObj = {};
+// var channels = [];
+server.on( 'connection', function ( connection ) {
+	console.log( "new client" );
+
+	i++
+	var user = new User( connection );
+
+	user.client.on( 'message', function ( j_msgObj ) {
+		var msgObj = JSON.parse( j_msgObj );
+
+		checkMsgType( msgObj, user );
+	} )
+
+	connection.on( 'close', function () {
+
+		user.exit( userDb, user );
+	} )
+
+} )
+
+var checkMsgType = function ( msgObj, user ) {
+	console.log( user.name + ': ' + msgObj.type );
+	var msgType = msgObj.type
+
+	if ( msgType === "entering" ) {
+		user.enter( msgObj )
+		
+	}
+	else if ( msgType === "msg" ) {
+		user.send( userDb, now, msgObj, user ); //user
+
+	}
+
+}
+
+var User = function ( connection ) {
+	this.type = 'user';
+	this.connected = false;
+	this.client = connection;
+	this.name = 'anonymous';
+	this.id = '';
+	this.room = '';
+
+	this.enter = function ( msgObj ) {
+		this.connected = true;
+		console.log(this.connected);
+		this.id = i;
+		this.name = msgObj.name;
+		this.room = msgObj.room;
+			userDb.push( this )
+		console.log( this.name + " is user #" + this.id+this.connected);
+		connection.send( JSON.stringify( {
+			type: 'enter',
+			userId: this.id
+		} ) )
+	}
+
+	this.exit = function ( userDb, user ) {
+		this.connected = false;
+		// announceExit( user );
+
+		userDb.forEach( function ( users ) {
+			if ( users === user ) {
+				index = userDb.indexOf( users );
+				userDb.splice( index, 1 );
+			}
+
+		} )
+		i--
+	}
+
+	this.send = function ( userDb, time, msgObj,  user ) {
 
 
-//User database - array to store incoming clients and to track when they leave as well
-var userDB = [];
+		var message = jsonMsg( this.name, now, msgObj.msg, this.room, '' )
+		console.log(message);
+		userDb.forEach( function ( other ) {
+			other.client.send( message )
+		} )
+	}
+}
 
-// Channel constructor - 
-// var Channel = function(name, pw, num, type){
-//  this.name =  ""
-//  this.type = "channel";
-//  this.pw = pw;
-//  this.userDB = [];
-//  this.size = num;
-//  this.join = function(){
+// var announceExit = function ( users, user ) {
 
-//  }
-//  this.create = function(){
-//    if (user.DB.length > 2){
-//      this.join = false;
-//    }
-//     else if (userDB.length >10)
-//      user.DB
-//    }
-//  }
+// 	userDb.forEach( function ( users ) {
+// 		var exiter = {
+// 			type: "exiting",
+// 			msg: user.name
+// 		}
 
- //// Whisper Object
-// var msgW = {
-//   type: "whisper",
-//   this.userDB = [];
-//   this.create = function(user){
-//     while userDB 
-//   }
+// 		users.client.send( JSON.stringify( exiter ) )
+// 	} )
 // }
-//Message database - array to store chat history for new clients and alleviate FOMO ;)
-var msgDB = {
-    type: "history",
-    list: []
+
+var jsonMsg = function ( from, at, message, room, to ) {
+	
+	var msgObj = {
+		type: 'msg',
+		at: now,
+		from: from,
+		msg: message,
+		room: room,
+		to: to
+	};
+	var jsonedMsg = JSON.stringify( msgObj );
+
+	return jsonedMsg;
 }
-//Display users via list
-var onlineUsrs = {
-    type: "userList",
-    list: []
+
+var determineRoom = function ( message, to ) {
+	var users = channels[ room ]
+	if ( to == 'General' ) {
+		users.client.send( JSON.stringify( message.msg ) )
+	}
+	else {
+		for ( var i in users ) {
+			users( i )
+				.send( message );
+		}
+	}
 }
-//User object - establish that connecting client is User and assign name
-var User = function ( connection )
-{
-    this.name = "";
-    // this.color = rgb;
-    this.client = connection;
-};
 
-if(msgDB.list.length>1){
-  server.send(JSON.stringify({type:"history", list: history}))
-}
-//Log to check server's up
-console.log( "Server running on port 3000." )
-// Channel.general = general
-//On connection...
-server.on( "connection", function ( client )
-{
-    //Create new user object and push to userDB
-    var currUser = new User( client );
-    userDB.push( currUser );
-    console.log( "New client has connected." );
-
-    //Broadcast client in channel  
-    userDB.forEach( function ( user )
-    {
-        if ( user.client != client )
-        {
-            user.client.send( JSON.stringify( "Welcome!" ) );
-        }
-    } );
-    //On message...
-    client.on( "message", function ( msg )
-    {
-        if ( currUser.name === "" )
-        { // if name is null
-            client.send( JSON.stringify( msgDB ) );
-            currUser.name = msg;
-            onlineUsrs.list.push( msg );
-            userDB.forEach( function ( user )
-            {
-                user.client.send( JSON.stringify( onlineUsrs ) );
-            } );
-        }
-        else
-        {
-            var parsedMsg = JSON.parse( msg );
-            parsedMsg.msgType = "history";
-            msgDB.list.push( parsedMsg );
-            userDB.forEach( function ( user )
-            
-            {
-
-                currUser.client.send( msg );
-            } );
-        }
-    } );
-    // On close...
-    client.on( "close", function ()
-    {
-        var exitingUsr = "";
-        userDB.forEach( function ( ext )
-        {
-            if ( ext.currUser === client )
-            {
-                exitingUsr = ext.name;
-                var index = userDB.indexOf( ext );
-                userDB.splice( index, 1 );
-
-            }
-        } );
-    //     onlineUsrs.list.forEach( function ( sn )
-    //     {
-    //         if ( sn === exitingUsr )
-    //         {
-    //             var exit = onlineUsrs.list.indexOf( sn );
-    //             onlineUsrs.list.splice( exit, 1 );
-    //         }
-    //     } );
-    //     userDB.forEach( function ( user )
-    //     {
-    //         onlineUsrs.type = "exit";
-    //         user.client.send( JSON.stringify( onlineUsrs ) );
-    //         user.client.send( JSON.stringify(
-    //         {
-    //             type: "end",
-    //             message: exitingUsr + " is offline."
-    //         } ) );
-        } );
-    } );
-// } );
