@@ -1,6 +1,8 @@
 ##Chat App
 Still messing around...Using moment & WS Node packages
 
+#####To run
+  ---
 1. ```$ npm install```
 2. ```$ node server.js```
 3. ```$ open client.html```
