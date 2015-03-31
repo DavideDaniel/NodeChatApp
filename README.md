@@ -1,9 +1,9 @@
-Chat App
-Using moment & WS Node packages
+##Chat App
+Still messing around...Using moment & WS Node packages
 
-$ npm install
-$ node d4.js
-$ open c4.html
+1. ```$ npm install```
+2. ```$ node d4.js```
+3. ```$ open c4.html```
 
 Each client needs c4.html (using c4.js) 
 
