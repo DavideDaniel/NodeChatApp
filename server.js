@@ -126,24 +126,25 @@ var announceExit = function(userDb, user) {
         users.client.send(JSON.stringify(exitMsg))
     })
 };
-var jsonMsg = function(from, at, message, room) {
+var jsonMsg = function(from, at, message, room, to) {
     var msgObj = {
         type: 'msg',
         at: now,
         from: from,
         msg: message,
-        room: room
+        room: room,
+        to: to
     };
     var jsonedMsg = JSON.stringify(msgObj);
     return jsonedMsg;
 };
-// var determineRoom = function(message, to) {
-//     var users = channels[room]
-//     if (to == 'General') {
-//         users.client.send(JSON.stringify(message.msg))
-//     } else {
-//         for (var i in users) {
-//             users(i).send(message);
-//         }
-//     }
-// }
+var determineRoom = function(message, to) {
+    var users = channels[room]
+    if (to == 'General') {
+        users.client.send(JSON.stringify(message.msg))
+    } else {
+        for (var i in users) {
+            users(i).send(message);
+        }
+    }
+}
