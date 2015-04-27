@@ -1,0 +1,173 @@
+a {
+  color: #00B7FF;
+}
+
+* {
+    font-family: Helvetica, arial, sans-serif;
+}
+p#enter {
+    font-size: 80%;
+    line-height: 10%;
+    vertical-align: top;
+
+}
+#fixed {
+    border: thin solid black;
+    min-height: 10vh;
+    margin: auto;
+    text-align: center;
+    padding: 2%;
+    overflow: auto;
+}
+.header {
+    background-color: #0a5ea2;
+    font-size: 100%;
+    text-align: center;
+    width: 20%;
+    margin: auto;
+    margin-top: 2%;
+}
+.container {
+    border: thick solid black;
+    height: 80%;
+    width: 80%;
+    min-width: 500px;
+
+    display: flex;
+    margin: auto;
+}
+#inset {
+    border: thin solid red;
+    height: 100%;
+    width: 85%;
+    min-width: 300px; 
+    overflow: auto;
+    /*flex: 2;*/
+    align-self: center;
+    display: flex;
+    flex-direction: column-reverse;
+}
+.sidebar {
+    background-color: #543a52; /*aubergine #3c2a3b*/
+    border: thin solid blue;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    /*flex: .40;*/
+    height: 100%;
+    min-width: 150px;
+    overflow-y: scroll;
+}
+#title{
+    flex: .25   ;
+    color: #fff;
+    
+    
+    background-color: rgba(0,0,0,.5)
+}
+h4{
+    margin-top: 2px;
+    margin-bottom: 2px;
+    margin-left: 5%;
+    
+    /*border: thin solid white */
+}
+.channels{
+    color: #92658e;
+    
+    flex: 2;
+}
+.users{
+    color: #92658e;
+    flex: 3;
+}
+#privateRooms{
+    flex: 1;
+}
+.bottom{
+    display: flex;
+    border: thick solid orange;
+    height: 5%;
+    width: 80%;
+    display: flex;
+    margin: auto;
+    min-width: 500px;
+
+}
+.me{
+    border: thin solid black;
+    
+    min-width: 150px;
+}
+
+
+
+.input {
+    border: thick solid green;
+    /*height: 5%;*/
+    /*width: 60%;*/
+    flex: 2;
+    display: flex;
+    /*margin: auto;*/
+}
+
+#inputMsg {
+    flex: 2;
+}
+
+#inputOne {
+    border: thin solid green;
+    height: 5%;
+    width: 45%;
+    /*align-self: container;*/
+    margin: auto;
+    text-align: center;
+}
+#inputTwo {
+    border: thin solid green;
+    height: 5%;
+    width: 45%;
+    /*align-self: container;*/
+    /*margin: auto;*/
+    text-align: center;
+}
+
+#chat {
+    list-style: none;
+    vertical-align: bottom;
+}
+.chatter{
+    display: block;
+    width: 98%;
+
+    /*background-color: #4f0;*/
+    
+    margin-left: 1%;
+    margin-bottom: 1%;
+    margin-top: 1%;
+
+
+}
+#name {
+    text-align: left;
+    padding: 2%;
+    font-size: 100% ;
+    font-weight: bold;
+}
+#time {
+    text-align: right;
+    font-size: 80% ;
+    color: gray;
+}
+#message {
+    padding-top: 1%;
+    margin-left: 5%;
+
+
+}
+#alert {
+    padding-top: 1%;
+    margin-left: 5%;
+    font-style: italic;
+    color: gray;
+}

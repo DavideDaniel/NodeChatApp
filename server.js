@@ -1,6 +1,6 @@
 var WSS = require('ws').Server;
 var server = new WSS({
-    port: 3000
+    port: 5210
 });
 console.log("Server listening on port 3000");
 var moment = require('moment');

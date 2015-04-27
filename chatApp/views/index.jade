@@ -1,0 +1,34 @@
+extends layout
+
+block content
+    .container
+      .sidebar
+        #title
+          h4 slacker      
+        .channels
+          h4 @channels
+          |                     
+          ul#channels
+            li
+              button#joinChan Join             
+        .users
+          h4 @users
+          |                     
+          ul#users
+            li
+      #inset
+        #fixed
+          p#enter  Please enter your screen name and channel:
+          br
+          |                     
+          input#inputOne(type='text', placeholder='Name')
+          |                     
+          input#inputTwo(type='text', placeholder='Room ')
+    .bottom
+      .me
+        #profile
+      |             
+      .input
+        input#inputMsg(placeholder='Type here')
+    |     
+    script(type='text/javascript', src='/javascripts/client.js')
