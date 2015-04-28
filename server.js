@@ -23,7 +23,8 @@ var Channel = function(name) {
     this.join = function(user) {
         user.channelName = this.name;
         this.users.push(user);
-        console.log('joining'+user.channelName);
+        console.log('Server:' + user.name + ' is joining ' + user.channelName);
+        joinChanMsg(user);
     };
     this.leave = function(user) {
         var index = this.users.indexOf(user);
@@ -43,7 +44,7 @@ var Channel = function(name) {
 //     connection.send(JSON.stringify(msgObj))
 // };
 var checkMsgType = function(msgObj, user) {
-    console.log(user.name + ' in channel '+user.channelName+' is sending '+ msgObj.type);
+    console.log(user.name + ' in channel ' + user.channelName + ' is sending ' + msgObj.type);
     var msgType = msgObj.type
     if (msgType === "firstEntering") {
         user.enter(msgObj)
@@ -54,32 +55,32 @@ var checkMsgType = function(msgObj, user) {
     } else if (msgType === 'join') {
         console.log('inside join');
         console.log(channelList);
-        console.log('this is msgObj'+msgObj);
-        console.log('this is user.channel'+user.channelName);
-
-        if (user.channelName != msgObj.name){
-                channelList.forEach(function each(channel) {
-        
-                    if (channel.name === msgObj.name) {
-                     console.log('inside join loop');
-                        console.log(channel.name);
-                        console.log('comparing');
-                        console.log(msgObj.name);
-                        channel.join(user);
-                    }
-                })}
+        console.log('this is msgObj' + msgObj.name);
+        console.log('this is user.channel' + user.channelName);
+        if (user.channelName != msgObj.name) {
+            for (var i = 0; i < channelList.length; i++) {
+                if (channelList[i].name === msgObj.name) {
+                    console.log(channelList[i].name);
+                    channelList[i].join(user);
+                } else {
+                    var newChan = msgObj.name
+                    newChannelFunc(newChan, function() {
+                        newChan.join(user);
+                    });
+                }
+            };
+        }
     } else if (msgType === "msg") {
         // chanFilter(msgObj, user);
-
-        var userChannel = msgObj.channel
-        console.log(userChannel);
-        console.log(channelList);
-    channelList.forEach(function each(channel) {
-        if (channel.name === userChannel) {
-            console.log('comparing '+channel+' to '+userChannel);
-            user.sendMsg(channel.users, now, msgObj, user); //user
-        }
-    });
+        // var userChannel = msgObj.channel
+        // console.log(userChannel);
+        // console.log(channelList);
+        channelList.forEach(function each(channel) {
+            if (channel.name === user.channelName) {
+                // console.log('comparing ' + channel + ' to ' + userChannel);
+                user.sendMsg(channel.users, now, msgObj, user); //user
+            }
+        });
     }
 };
 // var chanFilter = function(msgObj, user) {
@@ -110,14 +111,27 @@ var User = function(connection) {
         }
         connection.send(JSON.stringify(setIdMsg));
     }
-    this.sendMsg = function(channelUsers, time, msgObj, channel) {
-        var message = jsonMsg(this.name, now, msgObj.msg, this.channel)
+    this.sendMsg = function(channelUsers, time, msgObj) {
+        var message = jsonMsg(this.name, now, msgObj.msg)
         console.log(message);
         channelUsers.forEach(function each(other) {
             other.client.send(message)
         })
     }
 };
+var newChannelFunc = function(channelName, joinCallback) {
+    channelList.forEach(function each(channel) {
+        if(channelName != null){
+                if (channel.name === channelName) {
+                    return true
+                } else {
+                    console.log('creating');
+                    channelName = new Channel(channelName);
+                    channelList.push(channelName);
+                    console.log(channelList);
+                }}
+    })
+}
 var announceExit = function(userDb, user) {
     var exitMsg = {
         type: "exiting",
@@ -135,18 +149,24 @@ var announceExit = function(userDb, user) {
 var announceEntry = function(userDb, user) {
     var entryMsg = {
         type: "entering",
-        msg: user.name + " has joined the channel."
+        msg: user.name + " has joined channel: " + user.channelName
     }
     server.broadcast(JSON.stringify(entryMsg));
     console.log(userDb);
 };
-var jsonMsg = function(from, at, message, channel) {
+var joinChanMsg = function(user) {
+    var joinMsg = {
+        type: "joining",
+        msg: user.name + " has joined channel: " + user.channelName
+    }
+    server.broadcast(JSON.stringify(joinMsg));
+};
+var jsonMsg = function(from, at, message) {
     var msgObj = {
         type: 'msg',
         from: from,
         at: now,
-        msg: message,
-        channel: channel
+        msg: message
     };
     var jsonedMsg = JSON.stringify(msgObj);
     return jsonedMsg;
@@ -163,7 +183,7 @@ server.on('connection', function(connection) {
     })
     connection.on('close', function() {
         var atIndex = general.users.indexOf(user)
-        if (general.users[atIndex] === user){
+        if (general.users[atIndex] === user) {
             console.log('yeah user in here');
             general.users.splice(atIndex, 1);
             console.log(general.users);

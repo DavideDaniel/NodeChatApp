@@ -32,12 +32,8 @@ client.addEventListener("open", function(evt) {
     });
     var joinChan = document.getElementById("joinChan");
     joinChan.addEventListener("click", function(){
-    var channelName = prompt("Pick a channel");
-    var msgToJoin = {
-        type: "join",
-        name: channelName
-    }
-    client.send(JSON.stringify(msgToJoin));
+        var channelName = prompt("Pick a channel");
+    joinChannel(channelName);
 })
 });
 
@@ -52,18 +48,17 @@ client.addEventListener('close', function(close) {
 var input = document.getElementById('inputMsg')
 input.addEventListener('keyup', function(e) {
     if (e.keyCode === 13) {
-        var newMsg = new ObjToSend('msg', input.value, user.channelName);
+        var newMsg = new ObjToSend('msg', input.value);
         client.send(JSON.stringify(newMsg));
         input.value = '';
     }
 })
-var ObjToSend = function(type, message, channel) {
+var ObjToSend = function(type, message) {
     this.type = type;
     this.msg = message;
-    this.channel = channel;
 }
-var joinChannel = function(){
-var channelName = prompt("Pick a channel");
+var joinChannel = function(channelName){
+
     var msgToJoin = {
         type: "join",
         name: channelName
@@ -87,6 +82,8 @@ var checkMsgType = function(msgObj) {
     console.log(msgType);
     if (msgType === "setId") {
         successfulEnter(msgObj)
+    } else if (msgType === "joining") {
+        serverAlert(msgObj)
     } else if (msgType === "entering") {
         serverAlert(msgObj)
     } else if (msgType === 'exiting') {
