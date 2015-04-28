@@ -23,7 +23,7 @@ var Channel = function(name) {
     this.join = function(user) {
         user.channelName = this.name;
         this.users.push(user);
-        console.log('joining'+user.channel);
+        console.log('joining'+user.channelName);
     };
     this.leave = function(user) {
         var index = this.users.indexOf(user);
@@ -43,7 +43,7 @@ var Channel = function(name) {
 //     connection.send(JSON.stringify(msgObj))
 // };
 var checkMsgType = function(msgObj, user) {
-    console.log(user.name + ': ' + msgObj.type);
+    console.log(user.name + ' in channel '+user.channelName+' is sending '+ msgObj.type);
     var msgType = msgObj.type
     if (msgType === "firstEntering") {
         user.enter(msgObj)
@@ -55,9 +55,9 @@ var checkMsgType = function(msgObj, user) {
         console.log('inside join');
         console.log(channelList);
         console.log('this is msgObj'+msgObj);
-        console.log('this is user.channel'+user.channel.name);
+        console.log('this is user.channel'+user.channelName);
 
-        if (user.channel.name != msgObj.name){
+        if (user.channelName != msgObj.name){
                 channelList.forEach(function each(channel) {
         
                     if (channel.name === msgObj.name) {
@@ -95,14 +95,14 @@ var User = function(connection) {
     this.client = connection;
     this.name = '';
     this.id = '';
-    this.channelName = {};
+    this.channelName = '';
     this.enter = function(msgObj) {
         this.connected = true;
         console.log(this.connected);
         this.id = i;
         this.name = msgObj.name;
-        this.channelName = msgObj.channelName;
         userDb.push(this)
+        general.join(this)
         console.log(this.name + " is user #" + " " + this.id + " & connection is now " + this.connected);
         var setIdMsg = {
             type: 'setId',
@@ -156,9 +156,7 @@ channelList.push(general);
 server.on('connection', function(connection) {
     console.log("new client");
     var user = new User(connection);
-    general.join(user)
     i++
-
     user.client.on('message', function(data) {
         var msgObj = JSON.parse(data);
         checkMsgType(msgObj, user);

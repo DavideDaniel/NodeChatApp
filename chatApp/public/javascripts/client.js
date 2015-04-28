@@ -40,6 +40,7 @@ client.addEventListener("open", function(evt) {
     client.send(JSON.stringify(msgToJoin));
 })
 });
+
 client.addEventListener('message', function(message) {
     var msgObj = JSON.parse(message.data);
     checkMsgType(msgObj)
@@ -60,6 +61,14 @@ var ObjToSend = function(type, message, channel) {
     this.type = type;
     this.msg = message;
     this.channel = channel;
+}
+var joinChannel = function(){
+var channelName = prompt("Pick a channel");
+    var msgToJoin = {
+        type: "join",
+        name: channelName
+    }
+    client.send(JSON.stringify(msgToJoin));
 }
 var entering = function(name, channel) {
     var onEnter = {
