@@ -1,5 +1,5 @@
-var WSS = require('ws').Server;
-var server = new WSS({
+var WebSocketServer = require('ws').Server;
+var server = new WebSocketServer({
     port: 5210
 });
 console.log("Server listening on port 3000");
@@ -9,18 +9,27 @@ var userDb = [];
 var i = 0;
 var msgObj = {};
 var channels = [];
+var WebSocket = require('ws');
+
+server.broadcast = function broadcast(data){
+    server.clients.forEach(function each(client){
+        client.send(data);
+    });
+};
+
 server.on('connection', function(connection) {
+    
     console.log("new client");
-    i++
     var user = new User(connection);
+
     user.client.on('message', function(j_msgObj) {
         var msgObj = JSON.parse(j_msgObj);
         checkMsgType(msgObj, user);
     })
     connection.on('close', function() {
-        user.exit(userDb, user);
+        announceExit(userDb, user);
     })
-})
+});
 // var Channel = function() {
 //     this.type = "room";
 //     this.name = "";
@@ -49,14 +58,21 @@ server.on('connection', function(connection) {
 //             this.open);
 //     }
 // }
+// var sendChannels = function(channelList){
+//     var msgObj = {
+//         type: "channels",
+//         channels: channelList
+//     }
+//     connection.send(JSON.stringify(msgObj))
+// };
 var checkMsgType = function(msgObj, user, room) {
     console.log(user.name + ': ' + msgObj.type);
     var msgType = msgObj.type
-    if (msgType === "entering") {
-        user.enter(userDb, now, msgObj)
+    if (msgType === "firstEntering") {
+        user.enter(msgObj)
+        // sendChannels(channels);
     } else if (msgType === "exiting") {
         // announceExit(userDb);
-        user.exit()
     } else if (msgType === 'join') {
         channels.forEach(function(channel) {
             if (channel.name == msgObj.room) {
@@ -83,27 +99,11 @@ var User = function(connection) {
         this.name = msgObj.name;
         this.room = msgObj.room;
         userDb.push(this)
-        console.log(this.name + " is user #" + this.id + this.connected);
+        console.log(this.name + " is user #" +" "+ this.id + this.connected);
         connection.send(JSON.stringify({
             type: 'entering',
             userId: this.id
         }))
-    }
-    this.exit = function(userDb) {
-        var user = this;
-        connection.send(JSON.stringify({
-            type: 'exiting',
-            userId: user.id
-        }))
-        user.connected = false;
-        // announceExit( user );
-        userDb.forEach(function(users) {
-            if (users === user) {
-                var index = userDb.indexOf(users);
-                userDb.splice(index, 1);
-            }
-        })
-        i--
     }
     this.sendMsg = function(userDb, time, msgObj, user) {
         var message = jsonMsg(this.name, now, msgObj.msg, this.room)
@@ -114,7 +114,7 @@ var User = function(connection) {
     }
 };
 var announceExit = function(userDb, user) {
-    var exiting = {
+    var exitMsg = {
         type: "exiting",
         msg: user.name + " has left the room."
     }
@@ -123,8 +123,24 @@ var announceExit = function(userDb, user) {
             type: "exiting",
             msg: user.name
         }
-        users.client.send(JSON.stringify(exitMsg))
+        if (users === user) {
+            var index = userDb.indexOf(users);
+            userDb.splice(index, 1);
+        }
+    
     })
+    server.broadcast(JSON.stringify(exitMsg))
+    i--
+    
+};
+var announceEntry = function(userDb, user) {
+    var entryMsg = {
+            type: "entering",
+            msg: user.name + " has joined the room."
+        }
+    server.broadcast(JSON.stringify(entryMsg))
+    i++
+    
 };
 var jsonMsg = function(from, at, message, room, to) {
     var msgObj = {
@@ -138,13 +154,13 @@ var jsonMsg = function(from, at, message, room, to) {
     var jsonedMsg = JSON.stringify(msgObj);
     return jsonedMsg;
 };
-var determineRoom = function(message, to) {
-    var users = channels[room]
-    if (to == 'General') {
-        users.client.send(JSON.stringify(message.msg))
-    } else {
-        for (var i in users) {
-            users(i).send(message);
-        }
-    }
-}
+// var determineRoom = function(message, to) {
+//     var users = channels[room]
+//     if (to == 'General') {
+//         users.client.send(JSON.stringify(message.msg))
+//     } else {
+//         for (var i in users) {
+//             users(i).send(message);
+//         }
+//     }
+// }

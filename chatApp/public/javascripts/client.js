@@ -7,6 +7,7 @@ var user = {
     room: '',
     msg: ''
 };
+var channelList = [];
 var chatList = [];
 var userList = document.querySelector("ul#users")
 var userListDiv = document.querySelector("div#usrs")
@@ -18,7 +19,7 @@ client.addEventListener("open", function(evt) {
     var inputTwo = document.getElementById("inputTwo")
     inputTwo.addEventListener("keyup", function(e) {
         if (e.keyCode === 13 && inputOne.value.trim() != "") {
-            var fixedDiv = document.querySelector("#fixed")
+            var hiddenDiv = document.querySelector("#hiddenDiv")
             var button = document.getElementById("login");
             user.name = inputOne.value;
             user.room = inputTwo.value;
@@ -26,7 +27,7 @@ client.addEventListener("open", function(evt) {
                 user.room = 'General';
             }
             entering(user.name, user.room)
-            fixedDiv.style.display = "none";
+            hiddenDiv.style.display = "none";
         }
     });
     var joinChan = document.getElementById("joinChan");
@@ -50,18 +51,18 @@ client.addEventListener('close', function(close) {
 var input = document.getElementById('inputMsg')
 input.addEventListener('keyup', function(e) {
     if (e.keyCode === 13) {
-        var newMsg = new objToSend('msg', input.value);
+        var newMsg = new ObjToSend('msg', input.value);
         client.send(JSON.stringify(newMsg));
         input.value = '';
     }
 })
-var objToSend = function(type, message) {
+var ObjToSend = function(type, message) {
     this.type = type;
     this.msg = message;
 }
 var entering = function(name, room) {
     var onEnter = {
-        type: 'entering',
+        type: 'firstEntering',
         name: user.name,
         room: user.room
     }
@@ -81,9 +82,14 @@ var checkMsgType = function(msgObj) {
         serverAlert(msgObj)
     } else if (msgType === "msg") {
         displayMsg(msgObj);
+    } else if (msgType === 'channels'){
+        channelList = msgObj.channels
+        channelList.forEach(function(channel){
+            displayChannel(channel);
+        });
     }
 }
-var channelList = [];
+
 var displayChannel = function(msgObj) {
     var ul = document.getElementById('channels')
     var li = document.createElement('li')

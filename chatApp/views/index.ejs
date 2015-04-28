@@ -1,0 +1,42 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta author = "David Daniel">
+        <link rel="stylesheet" type="text/css" href="/stylesheets/reset.css">
+        <link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+        <script src="/javascripts/moment.js"></script>
+        <title>Chat</title>
+    </head>
+    <body>
+        <div class="container">
+            <div class="sidebar">
+                <div class="title">
+                    <h4>slacker</h4>
+                </div>
+                <div class="channels">
+                    <h4>@ channels <button id="joinChan">+</button></h4>
+                    <ul id = "channels"><li></li></ul>
+                </div>
+                <div class="users">
+                    <h4>@ users</h4>
+                    <ul id="users"><li></li></ul>
+                </div>
+            </div>
+            <div class="small-container">
+                <div id="inset">
+
+                    <div id = "hiddenDiv">
+                        <p id="enter"> Please enter your screen name and channel:</p><br>
+                        <input type="text" id="inputOne" placeholder="Name">
+                        <input type="text" id="inputTwo" placeholder ="Room ">
+                    </div>
+                </div>
+                <div class="bottom">
+                        <input placeholder="Type here" id="inputMsg">
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript" src="/javascripts/client.js"></script>
+    </body>
+</html>
