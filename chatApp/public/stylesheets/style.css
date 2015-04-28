@@ -39,12 +39,14 @@ p#enter {
     align-items: center;
     flex-direction: column;
 }
+
 #inset {
     height: 90%;
     width: 100%;
-    overflow-y: scroll;
     display: flex;
+     -webkit-flex: 1;
     flex-direction: column-reverse;
+    overflow-y: scroll;
 }
 .sidebar {
     background-color: #543a52;
@@ -59,7 +61,8 @@ p#enter {
     padding-top: 10px;
     margin-bottom: 10px;
     text-align: center;
-    flex: .25;
+    min-height: 30px;
+    /*flex: .25;*/
     color: #fff;
     background-color: rgba(0, 0, 0, .5)
 }
@@ -71,12 +74,13 @@ h4 {
 .channels {
     text-align: center;
     color: #92658e;
-    flex: 2;
+    min-height: 100px;
+    flex: 1.5;
 }
 .users {
     text-align: center;
     color: #92658e;
-    flex: 3;
+    flex: 2;
 }
 
 .bottom {
@@ -88,56 +92,49 @@ h4 {
 #inputMsg {
     width: 100%;
     height: 100%;
+    min-height: 30px;
     padding-left:20px;
     border: medium solid #F6F6F6;
 }
 #inputOne {
-    height: 5%;
+    height: 30px;
     width: 45%;
 margin: auto;
     text-align: center;
 }
 #inputTwo {
-    height: 5%;
+    height: 30px;
     width: 45%;
-
-
-/*margin: auto;*/
-
 text-align: center;
-}
-#chat {
-    list-style: none;
-    vertical-align: bottom;
 }
 .chatter {
     display: block;
     width: 98%;
-    /*background-color: #4f0;*/
-
-margin-left: 1%;
+    min-height:0px;
+    margin-left: 1%;
     margin-bottom: 1%;
     margin-top: 1%;
+    flex-shrink: 0;
 }
-#name {
+.name {
     text-align: left;
-    padding: 2%;
+    padding: 10px;
     font-size: 100%;
     font-weight: bold;
 }
-#time {
+.time {
     text-align: right;
     font-size: 80%;
     color: gray;
 }
-#message {
+.message {
     padding-top: 5px;
     margin-left: 20px;
 
 }
-#alert {
+.alert {
     padding-top: 1%;
-    margin-left: 5%;
+    margin-left: 20px;
     font-style: italic;
     color: gray;
 }

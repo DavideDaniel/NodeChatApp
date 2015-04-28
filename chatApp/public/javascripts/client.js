@@ -4,7 +4,9 @@ var user = {
     name: 'anonymous',
     connected: false,
     id: '',
-    room: '',
+    channel: {
+        name: 'General'
+    },
     msg: ''
 };
 var channelList = [];
@@ -22,20 +24,20 @@ client.addEventListener("open", function(evt) {
             var hiddenDiv = document.querySelector("#hiddenDiv")
             var button = document.getElementById("login");
             user.name = inputOne.value;
-            user.room = inputTwo.value;
+            user.channel.name = inputTwo.value;
             if (inputTwo.value === '' || inputTwo.value === 'general') {
-                user.room = 'General';
+                user.channel.name = 'General';
             }
-            entering(user.name, user.room)
+            entering(user.name, user.channel.name)
             hiddenDiv.style.display = "none";
         }
     });
     var joinChan = document.getElementById("joinChan");
     joinChan.addEventListener("click", function(){
-    var roomName = prompt("Pick a room");
+    var channelName = prompt("Pick a channel");
     var msgToJoin = {
         type: "join",
-        room: roomName
+        channel: channelName
     }
     client.send(JSON.stringify(msgToJoin));
 })
@@ -51,32 +53,34 @@ client.addEventListener('close', function(close) {
 var input = document.getElementById('inputMsg')
 input.addEventListener('keyup', function(e) {
     if (e.keyCode === 13) {
-        var newMsg = new ObjToSend('msg', input.value);
+        var newMsg = new ObjToSend('msg', input.value, user.channel.name);
         client.send(JSON.stringify(newMsg));
         input.value = '';
     }
 })
-var ObjToSend = function(type, message) {
+var ObjToSend = function(type, message, channel) {
     this.type = type;
     this.msg = message;
+    this.channel = channel;
 }
-var entering = function(name, room) {
+var entering = function(name, channel) {
     var onEnter = {
         type: 'firstEntering',
         name: user.name,
-        room: user.room
+        channel: user.channel.name
     }
     client.send(JSON.stringify(onEnter));
 }
 var successfulEnter = function(msgObj) {
-    userId = msgObj.userId
-    console.log("You are user #" + userId)
+    user.id = msgObj.userId
+    console.log("You are user #" + user.id)
 }
 var checkMsgType = function(msgObj) {
     var msgType = msgObj.type
     console.log(msgType);
-    if (msgType === "entering") {
+    if (msgType === "setId") {
         successfulEnter(msgObj)
+    } else if (msgType === "entering") {
         serverAlert(msgObj)
     } else if (msgType === 'exiting') {
         serverAlert(msgObj)
@@ -94,7 +98,7 @@ var displayChannel = function(msgObj) {
     var ul = document.getElementById('channels')
     var li = document.createElement('li')
     ul.appendChild(li)
-    li.innerHTML = msgObj.room;
+    li.innerHTML = msgObj.channel;
 }
 var serverAlert = function(msgObj) {
     var message = msgObj.msg;
@@ -104,12 +108,12 @@ var serverAlert = function(msgObj) {
     var msgDiv = document.createElement("div");
     msgDiv.setAttribute('class', 'chatter')
     var msgName = document.createElement("span");
-    msgName.setAttribute("id", "name");
+    msgName.setAttribute("class", "name");
     var msgTime = document.createElement("span");
-    msgTime.setAttribute("id", "time");
+    msgTime.setAttribute("class", "time");
     msgTime.innerHTML = now;
     var msgHolder = document.createElement("div");
-    msgHolder.setAttribute("id", "alert");
+    msgHolder.setAttribute("class", "alert");
     msgHolder.innerHTML = message;
     msgDiv.appendChild(msgName);
     msgDiv.appendChild(msgTime);
@@ -124,13 +128,13 @@ var displayMsg = function(msgObj) {
     var msgDiv = document.createElement("div");
     msgDiv.setAttribute('class', 'chatter')
     var msgName = document.createElement("span");
-    msgName.setAttribute("id", "name");
+    msgName.setAttribute("class", "name");
     msgName.innerHTML = msgObj.from;
     var msgTime = document.createElement("span");
-    msgTime.setAttribute("id", "time");
+    msgTime.setAttribute("class", "time");
     msgTime.innerHTML = now;
     var msgHolder = document.createElement("div");
-    msgHolder.setAttribute("id", "message");
+    msgHolder.setAttribute("class", "message");
     msgHolder.innerHTML = msgObj.msg;
     msgDiv.appendChild(msgName);
     msgDiv.appendChild(msgTime);
