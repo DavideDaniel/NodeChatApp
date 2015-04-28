@@ -21,7 +21,9 @@ var Channel = function(name) {
     this.pw = '';
     this.users = [];
     this.join = function(user) {
+        user.channelName = this.name;
         this.users.push(user);
+        console.log('joining'+user.channel);
     };
     this.leave = function(user) {
         var index = this.users.indexOf(user);
@@ -50,11 +52,22 @@ var checkMsgType = function(msgObj, user) {
     } else if (msgType === "exiting") {
         // announceExit(userDb);
     } else if (msgType === 'join') {
-        channelList.forEach(function each(channel) {
-            if (channel.name === msgObj.channel.name) {
-                channel.join(user);
-            }
-        })
+        console.log('inside join');
+        console.log(channelList);
+        console.log('this is msgObj'+msgObj);
+        console.log('this is user.channel'+user.channel.name);
+
+        if (user.channel.name != msgObj.name){
+                channelList.forEach(function each(channel) {
+        
+                    if (channel.name === msgObj.name) {
+                     console.log('inside join loop');
+                        console.log(channel.name);
+                        console.log('comparing');
+                        console.log(msgObj.name);
+                        channel.join(user);
+                    }
+                })}
     } else if (msgType === "msg") {
         // chanFilter(msgObj, user);
 
@@ -82,13 +95,13 @@ var User = function(connection) {
     this.client = connection;
     this.name = '';
     this.id = '';
-    this.channel = {};
+    this.channelName = {};
     this.enter = function(msgObj) {
         this.connected = true;
         console.log(this.connected);
         this.id = i;
         this.name = msgObj.name;
-        this.channel = msgObj.channel;
+        this.channelName = msgObj.channelName;
         userDb.push(this)
         console.log(this.name + " is user #" + " " + this.id + " & connection is now " + this.connected);
         var setIdMsg = {
@@ -143,7 +156,7 @@ channelList.push(general);
 server.on('connection', function(connection) {
     console.log("new client");
     var user = new User(connection);
-    general.users.push(user)
+    general.join(user)
     i++
 
     user.client.on('message', function(data) {

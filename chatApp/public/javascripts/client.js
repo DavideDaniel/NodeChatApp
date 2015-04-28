@@ -4,9 +4,7 @@ var user = {
     name: 'anonymous',
     connected: false,
     id: '',
-    channel: {
-        name: 'General'
-    },
+    channelName: '',
     msg: ''
 };
 var channelList = [];
@@ -24,11 +22,11 @@ client.addEventListener("open", function(evt) {
             var hiddenDiv = document.querySelector("#hiddenDiv")
             var button = document.getElementById("login");
             user.name = inputOne.value;
-            user.channel.name = inputTwo.value;
+            user.channelName = inputTwo.value;
             if (inputTwo.value === '' || inputTwo.value === 'general') {
-                user.channel.name = 'General';
+                user.channelName = 'General';
             }
-            entering(user.name, user.channel.name)
+            entering(user.name, user.channelName)
             hiddenDiv.style.display = "none";
         }
     });
@@ -37,7 +35,7 @@ client.addEventListener("open", function(evt) {
     var channelName = prompt("Pick a channel");
     var msgToJoin = {
         type: "join",
-        channel: channelName
+        name: channelName
     }
     client.send(JSON.stringify(msgToJoin));
 })
@@ -53,7 +51,7 @@ client.addEventListener('close', function(close) {
 var input = document.getElementById('inputMsg')
 input.addEventListener('keyup', function(e) {
     if (e.keyCode === 13) {
-        var newMsg = new ObjToSend('msg', input.value, user.channel.name);
+        var newMsg = new ObjToSend('msg', input.value, user.channelName);
         client.send(JSON.stringify(newMsg));
         input.value = '';
     }
@@ -67,7 +65,7 @@ var entering = function(name, channel) {
     var onEnter = {
         type: 'firstEntering',
         name: user.name,
-        channel: user.channel.name
+        channel: user.channelName
     }
     client.send(JSON.stringify(onEnter));
 }
