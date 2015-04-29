@@ -64,32 +64,24 @@ var checkMsgType = function(msgObj, user) {
         console.log('this is msgObj' + msgObj.name);
         console.log('this is user.channel' + user.channelName);
         if (user.channelName != msgObj.name) {
+            user.channelName = msgObj.name
             for (var i = 0; i < channelList.length; i++) {
-                console.log(channelList[i].name);
-                channelList[i].join(user);
+                if (user.channelName === channelList[i].name) {
+                    console.log(channelList[i].name);
+                    channelList[i].join(user);
+                } else {
+                    channelList[i].leave(user);
+                }
             }
         }
     } else if (msgType === "msg") {
-        // chanFilter(msgObj, user);
-        // var userChannel = msgObj.channel
-        // console.log(userChannel);
-        // console.log(channelList);
         channelList.forEach(function each(channel) {
             if (channel.name === user.channelName) {
-                // console.log('comparing ' + channel + ' to ' + userChannel);
                 user.sendMsg(channel.users, now, msgObj, user); //user
             }
         });
     }
 };
-// var chanFilter = function(msgObj, user) {
-//     var userChannel = msgObj.channel
-//     channelList.forEach(function each(channel) {
-//         if (channel === user_channel) {
-//             user.sendMsg(channel, now, msgObj, user); //user
-//         }
-//     });
-// };
 var User = function(connection) {
     this.connected = false;
     this.client = connection;
@@ -112,7 +104,7 @@ var User = function(connection) {
     }
     this.sendMsg = function(channelUsers, time, msgObj) {
         var message = jsonMsg(this.name, now, msgObj.msg)
-        console.log(message);
+        console.log('from user.sendMsg' + message);
         channelUsers.forEach(function each(other) {
             other.client.send(message)
         })
@@ -162,7 +154,7 @@ var createChanPingBack = function(user, channelName, chanId) {
         chanId: chanId,
         channelName: channelName
     }
-    console.log('this is the createmsg'+createMsg.chanId);
+    console.log('this is the createmsg' + createMsg.chanId);
     user.client.send(JSON.stringify(createMsg))
 }
 var jsonMsg = function(from, at, message) {
@@ -179,7 +171,6 @@ var general = new Channel("General");
 general.id = chanId;
 channelList.push(general);
 server.on('connection', function(connection) {
-    console.log("new client");
     var user = new User(connection);
     i++
     user.client.on('message', function(data) {
@@ -187,12 +178,14 @@ server.on('connection', function(connection) {
         checkMsgType(msgObj, user);
     })
     connection.on('close', function() {
-        var atIndex = general.users.indexOf(user)
-        if (general.users[atIndex] === user) {
-            console.log('yeah user in here');
-            general.users.splice(atIndex, 1);
-            console.log(general.users);
-        }
+        channelList.forEach(function each(channel) {
+            var atIndex = channel.users.indexOf(user)
+            if (channel.users[atIndex] === user) {
+                console.log('yeah user in' + channel.name + 'here');
+                channel.users.splice(atIndex, 1);
+                console.log(channel.users);
+            }
+        })
         announceExit(userDb, user);
         i--
     })
