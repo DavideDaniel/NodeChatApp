@@ -7,6 +7,7 @@ var moment = require('moment');
 var now = moment().format('MMM Do, h:mm a');
 var userDb = [];
 var i = 0;
+var chanId = 0;
 var msgObj = {};
 var channelList = [];
 var WebSocket = require('ws');
@@ -15,8 +16,9 @@ server.broadcast = function broadcast(data) {
         client.send(data);
     });
 };
-var Channel = function(name) {
+var Channel = function(name, chanId) {
     this.name = name;
+    this.id = chanId;
     this.chanType = '';
     this.pw = '';
     this.users = [];
@@ -52,6 +54,10 @@ var checkMsgType = function(msgObj, user) {
         // sendChannels(channels);
     } else if (msgType === "exiting") {
         // announceExit(userDb);
+    } else if (msgType === 'creating') {
+        console.log('creating');
+        chanId++
+        newChannelFunc(user, msgObj.name, chanId)
     } else if (msgType === 'join') {
         console.log('inside join');
         console.log(channelList);
@@ -59,16 +65,9 @@ var checkMsgType = function(msgObj, user) {
         console.log('this is user.channel' + user.channelName);
         if (user.channelName != msgObj.name) {
             for (var i = 0; i < channelList.length; i++) {
-                if (channelList[i].name === msgObj.name) {
-                    console.log(channelList[i].name);
-                    channelList[i].join(user);
-                } else {
-                    var newChan = msgObj.name
-                    newChannelFunc(newChan, function() {
-                        newChan.join(user);
-                    });
-                }
-            };
+                console.log(channelList[i].name);
+                channelList[i].join(user);
+            }
         }
     } else if (msgType === "msg") {
         // chanFilter(msgObj, user);
@@ -119,18 +118,14 @@ var User = function(connection) {
         })
     }
 };
-var newChannelFunc = function(channelName, joinCallback) {
-    channelList.forEach(function each(channel) {
-        if(channelName != null){
-                if (channel.name === channelName) {
-                    return true
-                } else {
-                    console.log('creating');
-                    channelName = new Channel(channelName);
-                    channelList.push(channelName);
-                    console.log(channelList);
-                }}
-    })
+var newChannelFunc = function(user, channelName, chanId) {
+    if (channelName != null) {
+        console.log('creating func');
+        channelName = new Channel(channelName, chanId);
+        channelList.push(channelName);
+        console.log(channelList);
+        createChanPingBack(user, channelName.name, channelName.id);
+    }
 }
 var announceExit = function(userDb, user) {
     var exitMsg = {
@@ -161,6 +156,15 @@ var joinChanMsg = function(user) {
     }
     server.broadcast(JSON.stringify(joinMsg));
 };
+var createChanPingBack = function(user, channelName, chanId) {
+    var createMsg = {
+        type: 'create',
+        chanId: chanId,
+        channelName: channelName
+    }
+    console.log('this is the createmsg'+createMsg.chanId);
+    user.client.send(JSON.stringify(createMsg))
+}
 var jsonMsg = function(from, at, message) {
     var msgObj = {
         type: 'msg',
@@ -172,6 +176,7 @@ var jsonMsg = function(from, at, message) {
     return jsonedMsg;
 };
 var general = new Channel("General");
+general.id = chanId;
 channelList.push(general);
 server.on('connection', function(connection) {
     console.log("new client");

@@ -30,13 +30,17 @@ client.addEventListener("open", function(evt) {
             hiddenDiv.style.display = "none";
         }
     });
-    var joinChan = document.getElementById("joinChan");
-    joinChan.addEventListener("click", function(){
-        var channelName = prompt("Pick a channel");
-    joinChannel(channelName);
-})
+    var createChan = document.getElementById('createChan');
+    createChan.addEventListener('click', function click() {
+        var channelName = prompt('Name the channel');
+        // displayChannel(channelName);
+        var msgToCreate = {
+            type: 'creating',
+            name: channelName
+        }
+        client.send(JSON.stringify(msgToCreate));
+    })
 });
-
 client.addEventListener('message', function(message) {
     var msgObj = JSON.parse(message.data);
     checkMsgType(msgObj)
@@ -57,8 +61,7 @@ var ObjToSend = function(type, message) {
     this.type = type;
     this.msg = message;
 }
-var joinChannel = function(channelName){
-
+var joinChannel = function(channelName) {
     var msgToJoin = {
         type: "join",
         name: channelName
@@ -78,31 +81,49 @@ var successfulEnter = function(msgObj) {
     console.log("You are user #" + user.id)
 }
 var checkMsgType = function(msgObj) {
-    var msgType = msgObj.type
+    var msgType = msgObj.type;
     console.log(msgType);
     if (msgType === "setId") {
         successfulEnter(msgObj)
+    } else if (msgType === "create") {
+
+        console.log('inside create in else if with '+ msgObj);
+        console.log(msgObj.channelName);
+        displayChannel(msgObj.channelName, msgObj.chanId)
+        
     } else if (msgType === "joining") {
-        serverAlert(msgObj)
-    } else if (msgType === "entering") {
         serverAlert(msgObj)
     } else if (msgType === 'exiting') {
         serverAlert(msgObj)
     } else if (msgType === "msg") {
         displayMsg(msgObj);
-    } else if (msgType === 'channels'){
+    } else if (msgType === 'channels') {
         channelList = msgObj.channels
-        channelList.forEach(function(channel){
-            displayChannel(channel);
+        channelList.forEach(function(channel) {
+            // displayChannel(channel);
         });
     }
 }
-
-var displayChannel = function(msgObj) {
+var addListener = function(elemId) {
+    console.log('adding listener with '+elemId);
+    var joinChanLiElement = document.getElementById(elemId);
+    console.log(joinChanLiElement);
+    joinChanLiElement.addEventListener("click", function() {
+        console.log(this);
+        joinChannel(joinChanLiElement.innerText);
+    })
+};
+var displayChannel = function(channelName, elemId) {
     var ul = document.getElementById('channels')
     var li = document.createElement('li')
+    var a = document.createElement('a')
+    var chanId = channelName+elemId
     ul.appendChild(li)
-    li.innerHTML = msgObj.channel;
+    li.appendChild(a)
+    li.setAttribute('id', chanId)
+    li.innerHTML = channelName;
+    console.log(li);
+    addListener(chanId)
 }
 var serverAlert = function(msgObj) {
     var message = msgObj.msg;
@@ -153,12 +174,12 @@ var displayMsg = function(msgObj) {
 //         if(e.keyCode === 13) {
 //         
 //         var li = document.createElement("li");
-//       	li.innerText= input.value;
-//       	li.setAttribute('id', 'msg')
-//       	var msgHolder = document.querySelector("ul#msgHolder");
-//       	msgHolder.appendChild(li);
-//       	var before = ul.firstChild;
-// 		ul.insertBefore( li, before )
+//          li.innerText= input.value;
+//          li.setAttribute('id', 'msg')
+//          var msgHolder = document.querySelector("ul#msgHolder");
+//          msgHolder.appendChild(li);
+//          var before = ul.firstChild;
+//      ul.insertBefore( li, before )
 //         input.value = ''; //clear the input area
 //       }
 //   });
