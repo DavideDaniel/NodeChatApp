@@ -1,4 +1,5 @@
-var client = new WebSocket("ws://localhost:5210");
+var client = new WebSocket("ws://localhost:2000");
+// user literal obj defined
 var user = {
     type: 'user',
     name: 'anonymous',
@@ -7,17 +8,20 @@ var user = {
     channelName: '',
     msg: ''
 };
+
+// empty arrays defined for scope 
 var channelList = [];
 var chatList = [];
-var userList = document.querySelector("ul#users")
-var userListDiv = document.querySelector("div#usrs")
-client.addEventListener("open", function(evt) {
+var onlineUserList = [];
+
+// client open
+client.addEventListener("open", function (evt) {
     console.log("Connected to server");
     user.connected = true;
     console.log(user.connected);
     var inputOne = document.getElementById("inputOne")
     var inputTwo = document.getElementById("inputTwo")
-    inputTwo.addEventListener("keyup", function(e) {
+    inputTwo.addEventListener("keyup", function (e) {
         if (e.keyCode === 13 && inputOne.value.trim() != "") {
             var hiddenDiv = document.querySelector("#hiddenDiv")
             var button = document.getElementById("login");
@@ -26,7 +30,7 @@ client.addEventListener("open", function(evt) {
             if (inputTwo.value === '' || inputTwo.value === 'general') {
                 user.channelName = 'General';
             }
-            entering(user.name, user.channelName)
+            firstEntering(user.name, user.channelName)
             hiddenDiv.style.display = "none";
         }
     });
@@ -41,94 +45,135 @@ client.addEventListener("open", function(evt) {
         client.send(JSON.stringify(msgToCreate));
     })
 });
-client.addEventListener('message', function(message) {
+
+// client message
+client.addEventListener('message', function (message) {
     var msgObj = JSON.parse(message.data);
-    checkMsgType(msgObj)
-})
-client.addEventListener('close', function(close) {
+    checkMsgType(msgObj);
+});
+
+// client close
+client.addEventListener('close', function (close) {
     user.connected = false;
     console.log(user.connected);
 });
-var input = document.getElementById('inputMsg')
-input.addEventListener('keyup', function(e) {
+
+// grab DOM elem for chat input
+var inputMsg = document.getElementById('inputMsg')
+// add eventlistener to it
+inputMsg.addEventListener('keyup', function (e) {
     if (e.keyCode === 13) {
-        var newMsg = new ObjToSend('msg', input.value);
+        var newMsg = {
+            type: 'msg',
+            msg: inputMsg.value
+        }
         client.send(JSON.stringify(newMsg));
-        input.value = '';
+        inputMsg.value = '';
     }
-})
-var ObjToSend = function(type, message) {
-    this.type = type;
-    this.msg = message;
-}
-var joinChannel = function(channelName) {
+});
+
+// Functions available for all 
+// ===========================
+var joinChannel = function (channelName) {
     var msgToJoin = {
         type: "join",
         name: channelName
     }
     client.send(JSON.stringify(msgToJoin));
-}
-var entering = function(name, channel) {
-    var onEnter = {
+};
+
+var firstEntering = function (name, channel) {
+    var enteringMsg = {
         type: 'firstEntering',
         name: user.name,
         channel: user.channelName
     }
-    client.send(JSON.stringify(onEnter));
-}
-var successfulEnter = function(msgObj) {
+    client.send(JSON.stringify(enteringMsg));
+};
+
+var setUserId = function (msgObj) {
     user.id = msgObj.userId
     console.log("You are user #" + user.id)
-}
-var checkMsgType = function(msgObj) {
+};
+
+var displayOnlineUser = function (msgObj) {
+    var ul = document.getElementById("onlineUsers");
+    var li = document.createElement("li");
+    li.innerHTML = msgObj.name;
+    ul.appendChild(li);
+    onlineUserList.push(li);
+};
+
+var removeOfflineUser = function (msgObj) {
+    onlineUserList.forEach(function each(name) {
+        if (name.innerHTML === msgObj.name) {
+            name.remove();
+        }
+    })
+};
+
+// function to filter message types & determine response
+var checkMsgType = function (msgObj) {
     var msgType = msgObj.type;
     console.log(msgType);
     if (msgType === "setId") {
-        successfulEnter(msgObj)
-    } else if (msgType === "create") {
-
-        console.log('inside create in else if with '+ msgObj);
+        setUserId(msgObj);
+    }
+    else if (msgType === "create") {
+        console.log('inside create in else if with ' + msgObj);
         console.log(msgObj.channelName);
         displayChannel(msgObj.channelName, msgObj.chanId)
-        
-    } else if (msgType === "joining") {
-        serverAlert(msgObj)
-    } else if (msgType === 'exiting') {
-        serverAlert(msgObj)
-    } else if (msgType === "msg") {
+    }
+    else if (msgType === "joining") {
+        serverAlert(msgObj);
+    }
+    else if (msgType === "entering") {
+        displayOnlineUser(msgObj);
+    }
+    else if (msgType === 'exiting') {
+        serverAlert(msgObj);
+        removeOfflineUser(msgObj);
+    }
+    else if (msgType === "msg") {
         displayMsg(msgObj);
-    } else if (msgType === 'channels') {
+    }
+    else if (msgType === 'channels') {
         channelList = msgObj.channels
-        channelList.forEach(function(channel) {
+        channelList.forEach(function (channel) {
             // displayChannel(channel);
         });
     }
-}
-var addListener = function(elemId) {
-    console.log('adding listener with '+elemId);
+};
+
+// function to add unique id to element for correct eventlistener use
+var addListener = function (elemId) {
     var joinChanLiElement = document.getElementById(elemId);
-    console.log(joinChanLiElement);
-    joinChanLiElement.addEventListener("click", function() {
+    joinChanLiElement.addEventListener("click", function () {
         console.log(this);
         joinChannel(joinChanLiElement.innerText);
-    })
+    });
 };
-var displayChannel = function(channelName, elemId) {
+
+var displayChannel = function (channelName, elemId) {
     var ul = document.getElementById('channels')
     var li = document.createElement('li')
     var a = document.createElement('a')
-    var chanId = channelName+elemId
+    var uniqueChanId = channelName + elemId
     ul.appendChild(li)
     li.appendChild(a)
-    li.setAttribute('id', chanId)
+    li.setAttribute('id', uniqueChanId)
     li.innerHTML = channelName;
-    console.log(li);
-    addListener(chanId)
-}
-var serverAlert = function(msgObj) {
+    // function called here so that it's not defined first due to hoisting
+    addListener(uniqueChanId);
+    channelList.push(li);
+};
+
+// display as server msg
+var serverAlert = function (msgObj) {
     var message = msgObj.msg;
     console.log(message);
-    var now = moment().format('h:mm a');
+    var now = moment()
+        .format('h:mm a');
     var inset = document.getElementById("inset");
     var msgDiv = document.createElement("div");
     msgDiv.setAttribute('class', 'chatter')
@@ -146,9 +191,12 @@ var serverAlert = function(msgObj) {
     inset.appendChild(msgDiv)
     var before = inset.firstChild;
     inset.insertBefore(msgDiv, before)
-}
-var displayMsg = function(msgObj) {
-    var now = moment().format('h:mm a');
+};
+
+// display as user msgs
+var displayMsg = function (msgObj) {
+    var now = moment()
+        .format('h:mm a');
     var inset = document.getElementById("inset");
     var msgDiv = document.createElement("div");
     msgDiv.setAttribute('class', 'chatter')
@@ -167,19 +215,4 @@ var displayMsg = function(msgObj) {
     inset.appendChild(msgDiv)
     var before = inset.firstChild;
     inset.insertBefore(msgDiv, before)
-}
-// TEST appending
-// var input = document.getElementById("inputMsg")
-//         input.addEventListener("keyup", function(e) {
-//         if(e.keyCode === 13) {
-//         
-//         var li = document.createElement("li");
-//          li.innerText= input.value;
-//          li.setAttribute('id', 'msg')
-//          var msgHolder = document.querySelector("ul#msgHolder");
-//          msgHolder.appendChild(li);
-//          var before = ul.firstChild;
-//      ul.insertBefore( li, before )
-//         input.value = ''; //clear the input area
-//       }
-//   });
+};
