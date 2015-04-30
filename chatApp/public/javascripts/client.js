@@ -122,7 +122,7 @@ var checkMsgType = function (msgObj) {
     else if (msgType === "create") {
         console.log('inside create in else if with ' + msgObj);
         console.log(msgObj.channelName);
-        displayChannel(msgObj.channelName, msgObj.chanId)
+        displayChannel(msgObj.channel, channelList);
     }
     else if (msgType === "joining") {
         serverAlert(msgObj);
@@ -137,11 +137,8 @@ var checkMsgType = function (msgObj) {
     else if (msgType === "msg") {
         displayMsg(msgObj);
     }
-    else if (msgType === 'channels') {
-        channelList = msgObj.channels
-        channelList.forEach(function (channel) {
-            // displayChannel(channel);
-        });
+    else if (msgType === 'channel') {
+            displayChannel(msgObj.channel, channelList);
     }
 };
 
@@ -154,18 +151,33 @@ var addListener = function (elemId) {
     });
 };
 
-var displayChannel = function (channelName, elemId) {
-    var ul = document.getElementById('channels')
-    var li = document.createElement('li')
-    var a = document.createElement('a')
-    var uniqueChanId = channelName + elemId
+var displayChannel = function (channelObj, channelArray) {
+    console.log('inside display function: \n'+channelObj);
+    var alreadyExists = false;
+    console.log('at top exists = '+alreadyExists);
+    var ul = document.getElementById('channels');
+    var li = document.createElement('li');
+    var a = document.createElement('a');
+    var uniqueChanId = channelObj.name + channelObj.id;
+
+    channelArray.forEach(function each(channel){
+        console.log('comparing '+channel.name+' with '+channelObj.name);
+        if(channelObj.name === channel.name){
+            
+            alreadyExists = true;
+        }
+        console.log('inside loop after if statement exists = '+alreadyExists);
+    });
+    console.log('outside loop first exists = '+alreadyExists);
+    if(alreadyExists === false){console.log('inside === statement exists = '+alreadyExists);}
+    if(!alreadyExists){console.log('inside ! statement exists = '+alreadyExists);}
     ul.appendChild(li)
     li.appendChild(a)
     li.setAttribute('id', uniqueChanId)
-    li.innerHTML = channelName;
+    li.innerText = channelObj.name;
     // function called here so that it's not defined first due to hoisting
     addListener(uniqueChanId);
-    channelList.push(li);
+    channelArray.push(li);
 };
 
 // display as server msg
