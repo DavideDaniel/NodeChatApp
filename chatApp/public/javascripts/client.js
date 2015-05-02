@@ -116,13 +116,16 @@ var removeOfflineUser = function (msgObj) {
 var checkMsgType = function (msgObj) {
     var msgType = msgObj.type;
     console.log(msgType);
-    if (msgType === "setId") {
-        setUserId(msgObj);
+    if (msgType === "firstEnter") {
+        // setUserId(msgObj);
+        console.log(msgObj.channels);
+        for (var i = 0; i < msgObj.channels.length; i++) {
+            displayChannel(msgObj.channels[i]);
+        };
     }
     else if (msgType === "create") {
         console.log('inside create in else if with ' + msgObj);
         console.log(msgObj.channelName);
-        displayChannel(msgObj.channel, channelList);
     }
     else if (msgType === "joining") {
         serverAlert(msgObj);
@@ -138,8 +141,27 @@ var checkMsgType = function (msgObj) {
         displayMsg(msgObj);
     }
     else if (msgType === 'channel') {
-            displayChannel(msgObj.channel, channelList);
+        console.log('recieving a channel');
+
+        channelList.push(msgObj.channel)
+        displayChannel(msgObj.channel);
+        var exists = false;
+        for (var i = 0; i < channelList.length; i++) {
+            // console.log('existing list on client ' + channelList[i].name);
+            // console.log('incoming channel' + msgObj.channel.name);
+            if (channelList[i].name === msgObj.channel.name) {
+                exists = true;
+
+            };
+            // console.log(exists);
+
+        };
+        if (exists === true) {
+            // console.log("EXISTS!");
+            // displayChannel(msgObj.channel);
+        }
     }
+
 };
 
 // function to add unique id to element for correct eventlistener use
@@ -151,33 +173,20 @@ var addListener = function (elemId) {
     });
 };
 
-var displayChannel = function (channelObj, channelArray) {
-    console.log('inside display function: \n'+channelObj);
-    var alreadyExists = false;
-    console.log('at top exists = '+alreadyExists);
+var displayChannel = function (channel) {
+
+    console.log('inside display function with channel#: \n' + channel.id);
     var ul = document.getElementById('channels');
     var li = document.createElement('li');
     var a = document.createElement('a');
-    var uniqueChanId = channelObj.name + channelObj.id;
-
-    channelArray.forEach(function each(channel){
-        console.log('comparing '+channel.name+' with '+channelObj.name);
-        if(channelObj.name === channel.name){
-            
-            alreadyExists = true;
-        }
-        console.log('inside loop after if statement exists = '+alreadyExists);
-    });
-    console.log('outside loop first exists = '+alreadyExists);
-    if(alreadyExists === false){console.log('inside === statement exists = '+alreadyExists);}
-    if(!alreadyExists){console.log('inside ! statement exists = '+alreadyExists);}
+    var uniqueChanId = channel.name + channel.id;
     ul.appendChild(li)
     li.appendChild(a)
     li.setAttribute('id', uniqueChanId)
-    li.innerText = channelObj.name;
+    li.innerText = channel.name;
     // function called here so that it's not defined first due to hoisting
     addListener(uniqueChanId);
-    channelArray.push(li);
+
 };
 
 // display as server msg
