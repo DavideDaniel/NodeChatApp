@@ -23,29 +23,107 @@ server.broadcast = function broadcast(data) {
     });
 };
 
-var Channel = function (name) {
+// Channel constructor
+function Channel(name) {
     this.name = name;
     this.id = channelList.length;
     this.type = '';
     this.pw = '';
     this.users = [];
     this.history = [];
-    this.join = function (user) {
+};
+
+Channel.prototype = {
+    join: function (user) {
         user.channelName = this.name;
         this.users.push(user);
         console.log('Server:' + user.name + ' is joining ' + user.channelName);
-        joinChanMsg(user);
-    };
-    this.leave = function (user) {
+        joinChanMsg(user, this.name);
+        console.log('here are the users');
+        console.log(this.users);
+    },
+
+    leave: function (user) {
         var index = this.users.indexOf(user);
+        console.log('Server:' + user.name + ' is leaving ' + user.channelName);
         this.users.splice(index, 1);
-    };
-    this.sendMsg = function (msgObj) {
+    },
+
+    sendMsg: function (msgObj) {
         console.log('from channel.sendMsg' + msgObj);
         this.users.forEach(function (user) {
             user.send(msg);
         });
+    }
+};
+
+// User constructor
+function User(connection) {
+    this.connected = false;
+    this.client = connection;
+    this.name = '';
+    this.id = userDb.length;
+    this.channelName = '';
+};
+
+User.prototype = {
+    enter: function (msgObj, channels) {
+        this.connected = true;
+        console.log(this.connected);
+        this.name = msgObj.name;
+        userDb.push(this)
+        general.join(this)
+        console.log(this.name + " is user #" + " " + this.id + " & connection is now " + this.connected);
+        processUser(channelList, this);
+    },
+    sendMsg: function (channelUsers, time, msgObj) {
+        var message = jsonMsg(this.name, now, msgObj.msg)
+        console.log('from user.sendMsg' + message);
+        channelUsers.forEach(function each(other) {
+            other.client.send(message)
+        })
+    }
+};
+
+var processUser = function (channelArray, user) {
+    var processMsg = {
+        type: 'firstEnter',
+        userId: user.id,
+        channels: []
+    }
+    var packChannel;
+    var channelHistory = [];
+    for (var i = 0; i < channelArray.length; i++) {
+        packChannel = function (channelObj) {
+            var minifyUser; // set var for later
+
+            var userArray = channelObj.users;
+            // console.log(userArray);
+            var miniChan = {
+                name: channelObj.name,
+                id: channelObj.id,
+                type: channelObj.type,
+                users: []
+            }
+            var miniUserList = [];
+            for (var i = 0; i < userArray.length; i++) {
+                minifyUser = function (userObj) {
+                    var miniUser = {
+                        name: userObj.name,
+                        id: userObj.id
+                    }
+                    miniUserList.push(miniUser);
+                    console.log(miniUserList);
+                };
+                minifyUser(userArray[i]);
+            }
+            miniChan.users = miniUserList;
+            channelHistory.push(miniChan);
+        };
+        packChannel(channelArray[i]);
     };
+    processMsg.channels = channelHistory;
+    user.client.send(JSON.stringify(processMsg));
 };
 
 var checkMsgType = function (msgObj, user) {
@@ -63,7 +141,6 @@ var checkMsgType = function (msgObj, user) {
         newChannelFunc(user, msgObj.name, channelList.length)
     }
     else if (msgType === 'join') {
-
         if (user.channelName != msgObj.name) {
             user.channelName = msgObj.name
             for (var i = 0; i < channelList.length; i++) {
@@ -84,71 +161,6 @@ var checkMsgType = function (msgObj, user) {
             }
         });
     }
-};
-
-var User = function (connection) {
-    this.connected = false;
-    this.client = connection;
-    this.name = '';
-    this.id = userDb.length;
-    this.channelName = '';
-    this.enter = function (msgObj, channels) {
-        this.connected = true;
-        console.log(this.connected);
-        this.name = msgObj.name;
-        userDb.push(this)
-        general.join(this)
-        console.log(this.name + " is user #" + " " + this.id + " & connection is now " + this.connected);
-        processUser(channelList, this.id, connection);
-    }
-    this.sendMsg = function (channelUsers, time, msgObj) {
-        var message = jsonMsg(this.name, now, msgObj.msg)
-        console.log('from user.sendMsg' + message);
-        channelUsers.forEach(function each(other) {
-            other.client.send(message)
-        })
-    }
-};
-var processUser = function (channelArray, id, connection) {
-    var processMsg = {
-        type: 'firstEnter',
-        userId: id,
-        channels: []
-    }
-    var packChannel;
-    var channelHistory = [];
-    for (var i = 0; i < channelArray.length; i++) {
-        packChannel = function (channelObj) {
-            var minifyUser; // set var for later
-
-            var userArray = channelObj.users;
-            var miniChan = {
-                name: channelObj.name,
-                id: channelObj.id,
-                type: channelObj.type,
-                users: []
-            }
-            var miniUserList = [];
-            for (var i = 0; i < userArray.length; i++) {
-                minifyUser = function (userObj, array) {
-                    var miniUser = {
-                        name: userObj.name,
-                        id: userObj.id
-                    }
-                    array.push(miniUser);
-                };
-
-                minifyUser(userArray[i], miniUserList);
-
-            }
-            channelHistory.push(miniChan);
-        };
-        packChannel(channelArray[i]);
-    };
-    console.log(processMsg);
-    processMsg.channels = channelHistory;
-    console.log(processMsg);
-    connection.send(JSON.stringify(processMsg));
 };
 
 var newChannelFunc = function (user, channelName, chanId) {
@@ -208,17 +220,8 @@ var announceExit = function (userDb, user) {
         }
     })
     server.broadcast(JSON.stringify(exitMsg));
-    console.log(userDb);
+    // console.log(userDb);
 };
-
-// var announceEntry = function(userDb, user) {
-//     var entryMsg = {
-//         type: "entering",
-//         name: user.name,
-//         msg: " is now in channel " + user.channelName
-//     }
-//     server.broadcast(JSON.stringify(entryMsg));
-// };
 
 var joinChanMsg = function (user) {
     var joinMsg = {
@@ -227,17 +230,6 @@ var joinChanMsg = function (user) {
     }
     server.broadcast(JSON.stringify(joinMsg));
 };
-
-// var createChanPingBack = function (user, channelName, chanId) {
-//     var chanForClient = {
-//         type: 'create',
-//         chanId: chanId,
-//         channelName: channelName
-//     }
-
-//     user.client.send(JSON.stringify(chanForClient))
-//     // user.client.send(JSON.stringify(chanForClient))
-// };
 
 var jsonMsg = function (from, at, message) {
     var msgObj = {
@@ -277,8 +269,7 @@ server.on('connection', function (connection) {
             if (channel.name === user.channel && msgObj.type === 'msg') {
                 channel.history.push(msgObj.msg)
             }
-        })
-
+        });
         checkMsgType(msgObj, user);
     });
     // connection closing

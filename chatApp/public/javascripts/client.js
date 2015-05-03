@@ -125,7 +125,7 @@ var checkMsgType = function (msgObj) {
     }
     else if (msgType === "create") {
         console.log('inside create in else if with ' + msgObj);
-        console.log(msgObj.channelName);
+        // console.log(msgObj.channelName);
     }
     else if (msgType === "joining") {
         serverAlert(msgObj);
@@ -150,7 +150,7 @@ var checkMsgType = function (msgObj) {
             // console.log('existing list on client ' + channelList[i].name);
             // console.log('incoming channel' + msgObj.channel.name);
             if (channelList[i].name === msgObj.channel.name) {
-                exists = true;
+                return true;
 
             };
             // console.log(exists);
