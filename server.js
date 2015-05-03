@@ -33,6 +33,7 @@ function Channel(name) {
     this.history = [];
 };
 
+// Channel prototype functions
 Channel.prototype = {
     join: function (user) {
         user.channelName = this.name;
@@ -67,6 +68,7 @@ function User(connection) {
     this.channelName = '';
 };
 
+// User prototype functions
 User.prototype = {
     enter: function (msgObj, channels) {
         this.connected = true;
@@ -78,8 +80,7 @@ User.prototype = {
         processUser(channelList, this);
     },
     sendMsg: function (channelUsers, time, msgObj) {
-        var message = jsonMsg(this.name, now, msgObj.msg)
-        console.log('from user.sendMsg' + message);
+        var message = jsonMsg(this.name, now, msgObj.msg);
         channelUsers.forEach(function each(other) {
             other.client.send(message)
         })
@@ -87,7 +88,13 @@ User.prototype = {
 };
 
 // // NEED TO MAKE A CLASS FOR MSG
-// function Msg (type)
+function Message (typeOfMsg, userFrom, time, message) {
+    this.type: typeOfMsg,
+    this.from: userFrom,
+    this.at: time,
+    this.msg: message
+}
+
 
 var processUser = function (channelArray, user) {
     var processMsg = {
@@ -100,7 +107,6 @@ var processUser = function (channelArray, user) {
     for (var i = 0; i < channelArray.length; i++) {
         packChannel = function (channelObj) {
             var minifyUser; // set var for later
-
             var userArray = channelObj.users;
             // console.log(userArray);
             var miniChan = {
@@ -135,11 +141,8 @@ var checkMsgType = function (msgObj, user) {
     var msgType = msgObj.type
     if (msgType === "firstEntering") {
         user.enter(msgObj);
-        // announceEntry(userDb, user);
-        // sendChannels(channelList);
     }
     else if (msgType === "exiting") {
-        // announceExit(userDb);
     }
     else if (msgType === 'creating') {
         newChannelFunc(user, msgObj.name, channelList.length);
@@ -149,7 +152,6 @@ var checkMsgType = function (msgObj, user) {
             user.channelName = msgObj.name
             for (var i = 0; i < channelList.length; i++) {
                 if (user.channelName === channelList[i].name) {
-                    console.log(channelList[i].name);
                     channelList[i].join(user);
                 }
                 else {
@@ -218,7 +220,6 @@ var announceExit = function (userDb, user) {
     console.log('inside the announceExit function with ' + user);
     userDb.forEach(function each(userObj) {
         if (userObj === user) {
-            'made it inside announce exit loop'
             var index = userDb.indexOf(userObj);
             userDb.splice(index, 1);
         }
@@ -278,8 +279,9 @@ server.on('connection', function (connection) {
         // }
         var msgObj = JSON.parse(data);
         channelList.forEach(function each(channel) {
-            if (channel.name === user.channel && msgObj.type === 'msg') {
-                channel.history.push(msgObj.msg)
+            if (channel.name === user.channelName && msgObj.type === 'msg') {
+                channel.history.push(msgObj)
+                console.log(channel.history);
             }
         });
         checkMsgType(msgObj, user);
@@ -289,10 +291,7 @@ server.on('connection', function (connection) {
         channelList.forEach(function each(channel) {
             var atIndex = channel.users.indexOf(user)
             if (channel.users[atIndex] === user) {
-                console.log('normal loop for connection close');
-                console.log('yeah user in' + channel.name + 'here');
                 channel.users.splice(atIndex, 1);
-                console.log(channel.users);
             }
         });
         announceExit(userDb, user);

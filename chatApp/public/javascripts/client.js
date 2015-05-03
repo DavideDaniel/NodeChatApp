@@ -124,8 +124,8 @@ var checkMsgType = function (msgObj) {
         };
     }
     else if (msgType === "create") {
-        console.log('inside create in else if with ' + msgObj);
-        // console.log(msgObj.channelName);
+        console.log('creating');
+        console.log(msgObj);
     }
     else if (msgType === "joining") {
         serverAlert(msgObj);
