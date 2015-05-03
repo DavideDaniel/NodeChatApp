@@ -130,6 +130,9 @@ var checkMsgType = function (msgObj) {
     else if (msgType === "joining") {
         serverAlert(msgObj);
     }
+    else if (msgType === "leaving") {
+        serverAlert(msgObj);
+    }
     else if (msgType === "entering") {
         displayOnlineUser(msgObj);
     }

@@ -45,8 +45,9 @@ Channel.prototype = {
 
     leave: function (user) {
         var index = this.users.indexOf(user);
-        console.log('Server:' + user.name + ' is leaving ' + user.channelName);
+        console.log('Server:' + user.name + ' is leaving ' + this.name);
         this.users.splice(index, 1);
+        leaveChanMsg(user, this.name)
     },
 
     sendMsg: function (msgObj) {
@@ -84,6 +85,9 @@ User.prototype = {
         })
     }
 };
+
+// // NEED TO MAKE A CLASS FOR MSG
+// function Msg (type)
 
 var processUser = function (channelArray, user) {
     var processMsg = {
@@ -138,7 +142,7 @@ var checkMsgType = function (msgObj, user) {
         // announceExit(userDb);
     }
     else if (msgType === 'creating') {
-        newChannelFunc(user, msgObj.name, channelList.length)
+        newChannelFunc(user, msgObj.name, channelList.length);
     }
     else if (msgType === 'join') {
         if (user.channelName != msgObj.name) {
@@ -209,7 +213,7 @@ var sendChannel = function (channel) {
 var announceExit = function (userDb, user) {
     var exitMsg = {
         type: "exiting",
-        msg: user.name + " has left the channel."
+        msg: user.name + " has left the server."
     }
     console.log('inside the announceExit function with ' + user);
     userDb.forEach(function each(userObj) {
@@ -223,13 +227,21 @@ var announceExit = function (userDb, user) {
     // console.log(userDb);
 };
 
-var joinChanMsg = function (user) {
+var joinChanMsg = function (user, channelName) {
     var joinMsg = {
         type: "joining",
-        msg: user.name + " has joined channel: " + user.channelName
+        msg: user.name + " has joined channel: " + channelName
     }
     server.broadcast(JSON.stringify(joinMsg));
 };
+
+var leaveChanMsg = function(user, channelName){
+    var leaveMsg = {
+        type: 'leaving',
+        msg: user.name + ' has left '+ channelName +' channel'
+    }
+    server.broadcast(JSON.stringify(leaveMsg));
+}
 
 var jsonMsg = function (from, at, message) {
     var msgObj = {
