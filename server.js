@@ -4,7 +4,9 @@ var moment = require('moment');
 
 // vars available to all 
 var now = moment()
-    .format('MMM Do, h:mm a');
+    .format('MMM Do, h:mm a'); // old server format
+var clientNow = moment()
+    .format('h:mm a'); // client format to make it uniform
 var userDb = [];
 // var userCounter = userDb.length;
 var channelList = [];
@@ -51,12 +53,11 @@ Channel.prototype = {
         leaveChanMsg(user, this.name)
     },
 
-    sendMsg: function (msgObj) {
-        console.log('from channel.sendMsg' + msgObj);
-        this.users.forEach(function (user) {
-            user.send(msg);
-        });
+    save: function (msgObj) {
+        this.history.push(msgObj)
+        console.log(this.history);
     }
+
 };
 
 // User constructor
@@ -73,7 +74,7 @@ User.prototype = {
     enter: function (msgObj, channels) {
         this.connected = true;
         console.log(this.connected);
-        this.name = msgObj.name;
+        this.name = msgObj.from;
         userDb.push(this)
         general.join(this)
         console.log(this.name + " is user #" + " " + this.id + " & connection is now " + this.connected);
@@ -88,19 +89,87 @@ User.prototype = {
 };
 
 // // NEED TO MAKE A CLASS FOR MSG
-function Message (typeOfMsg, userFrom, time, message) {
-    this.type: typeOfMsg,
-    this.from: userFrom,
-    this.at: time,
-    this.msg: message
-}
 
+function Message(typeOfMsg, inChannel, userFrom, time, message) {
+    this.type = typeOfMsg;
+    this.msgObj = {
+        channel: inChannel,
+        from: userFrom,
+        at: time,
+        msg: message
+    }
+};
+
+Message.prototype = {
+    jsonify: function () {
+        var msgToSend = JSON.stringify(this.msgObj)
+        return msgToSend
+    },
+
+    filter: function (user) {
+        var msgObj = this.msgObj;
+        console.log(msgObj);
+        if (this.type === 'firstEntering') {
+            console.log(msgObj);
+            user.enter(msgObj);
+        }
+        else if (this.type === 'exiting') {}
+        else if (this.type === 'creating') {
+            console.log('CREATE WITH');
+            console.log(msgObj);
+            newChannelFunc(user, msgObj.msg, channelList.length);
+        }
+        else if (this.type === 'join') {
+            console.log(msgObj);
+            if (user.channelName != msgObj.msg) {
+                user.channelName = msgObj.msg;
+                console.log('JOINING: ' + msgObj.msg);
+                for (var i = 0; i < channelList.length; i++) {
+                    if (user.channelName === channelList[i].name) {
+                        channelList[i].join(user);
+                    }
+                    else {
+                        channelList[i].leave(user);
+                    }
+                }
+            }
+        }
+        else if (this.type === 'msg') {
+            console.log('THIS = ' + msgObj.channel);
+            // // can potentially just send with class method
+            // var msgToGo = this.jsonify();
+            // console.log(msgToGo); 
+            channelList.forEach(function each(channel) {
+                // filter to channel only
+                if (msgObj.channel === channel.name) {
+                    channel.users.forEach(function each(chanUser) {
+                        // check if user is in channel
+                        if (user.name === chanUser.name) {
+                            user.sendMsg(channel.users, now, msgObj, user); // from user to channel
+                        }
+                    })
+                }
+            });
+        }
+    }
+};
+
+var newMessageFunc = function (msgObj, user) {
+    // if (msgObj.msg != null) {
+    console.log(msgObj);
+    var message = new Message(msgObj.type, msgObj.channel, msgObj.from, now, msgObj.msg);
+    console.log(message);
+    message.filter(user);
+    // }
+}
 
 var processUser = function (channelArray, user) {
     var processMsg = {
         type: 'firstEnter',
-        userId: user.id,
-        channels: []
+        msgObj: {
+            userId: user.id,
+            channels: []
+        }
     }
     var packChannel;
     var channelHistory = [];
@@ -113,7 +182,8 @@ var processUser = function (channelArray, user) {
                 name: channelObj.name,
                 id: channelObj.id,
                 type: channelObj.type,
-                users: []
+                users: [],
+                history: channelObj.history
             }
             var miniUserList = [];
             for (var i = 0; i < userArray.length; i++) {
@@ -139,11 +209,10 @@ var processUser = function (channelArray, user) {
 var checkMsgType = function (msgObj, user) {
     console.log(user.name + ' in channel ' + user.channelName + ' is sending ' + msgObj.type);
     var msgType = msgObj.type
-    if (msgType === "firstEntering") {
+    if (msgType === 'firstEntering') {
         user.enter(msgObj);
     }
-    else if (msgType === "exiting") {
-    }
+    else if (msgType === 'exiting') {}
     else if (msgType === 'creating') {
         newChannelFunc(user, msgObj.name, channelList.length);
     }
@@ -160,7 +229,7 @@ var checkMsgType = function (msgObj, user) {
             }
         }
     }
-    else if (msgType === "msg") {
+    else if (msgType === 'msg') {
         channelList.forEach(function each(channel) {
             if (channel.name === user.channelName) {
                 user.sendMsg(channel.users, now, msgObj, user); //user
@@ -187,7 +256,8 @@ var sendChannel = function (channel) {
         name: channel.name,
         id: channel.id,
         type: channel.type,
-        users: []
+        users: [],
+        history: channel.history
     }
     console.log('before loop\n' + miniChan);
     var miniUserList = [];
@@ -214,7 +284,7 @@ var sendChannel = function (channel) {
 
 var announceExit = function (userDb, user) {
     var exitMsg = {
-        type: "exiting",
+        type: 'exiting',
         msg: user.name + " has left the server."
     }
     console.log('inside the announceExit function with ' + user);
@@ -230,21 +300,21 @@ var announceExit = function (userDb, user) {
 
 var joinChanMsg = function (user, channelName) {
     var joinMsg = {
-        type: "joining",
-        msg: user.name + " has joined channel: " + channelName
+        type: 'joining',
+        msg: user.name + ' has joined channel: ' + channelName
     }
     server.broadcast(JSON.stringify(joinMsg));
 };
 
-var leaveChanMsg = function(user, channelName){
+var leaveChanMsg = function (user, channelName) {
     var leaveMsg = {
         type: 'leaving',
-        msg: user.name + ' has left '+ channelName +' channel'
+        msg: user.name + ' has left ' + channelName + ' channel'
     }
     server.broadcast(JSON.stringify(leaveMsg));
 }
 
-var jsonMsg = function (from, at, message) {
+var jsonMsg = function (from, now, message) {
     var msgObj = {
         type: 'msg',
         from: from,
@@ -280,11 +350,14 @@ server.on('connection', function (connection) {
         var msgObj = JSON.parse(data);
         channelList.forEach(function each(channel) {
             if (channel.name === user.channelName && msgObj.type === 'msg') {
-                channel.history.push(msgObj)
-                console.log(channel.history);
+                // channel.history.push(msgObj)
+                // console.log(channel.history);
+                channel.save(msgObj)
             }
         });
-        checkMsgType(msgObj, user);
+        // checkMsgType(msgObj, user);
+        newMessageFunc(msgObj, user);
+
     });
     // connection closing
     connection.on('close', function () {
@@ -299,4 +372,4 @@ server.on('connection', function (connection) {
     });
 });
 
-console.log("Server listening on port 2000");
+console.log('Server listening on port 2000');

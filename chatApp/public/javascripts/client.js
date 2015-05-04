@@ -40,7 +40,9 @@ client.addEventListener("open", function (evt) {
         // displayChannel(channelName);
         var msgToCreate = {
             type: 'creating',
-            name: channelName
+            from: user.name,
+            msg: channelName,
+            channel: user.channelName
         }
         client.send(JSON.stringify(msgToCreate));
     })
@@ -65,7 +67,9 @@ inputMsg.addEventListener('keyup', function (e) {
     if (e.keyCode === 13) {
         var newMsg = {
             type: 'msg',
-            msg: inputMsg.value
+            msg: inputMsg.value,
+            channel: user.channelName,
+            from: user.name
         }
         client.send(JSON.stringify(newMsg));
         inputMsg.value = '';
@@ -75,9 +79,13 @@ inputMsg.addEventListener('keyup', function (e) {
 // Functions available for all 
 // ===========================
 var joinChannel = function (channelName) {
+    user.channelName = channelName;
     var msgToJoin = {
-        type: "join",
-        name: channelName
+        type: 'join',
+        msg: channelName,
+        from: user.name,
+        channel: user.channelName
+        
     }
     client.send(JSON.stringify(msgToJoin));
 };
@@ -86,6 +94,7 @@ var firstEntering = function (name, channel) {
     var enteringMsg = {
         type: 'firstEntering',
         name: user.name,
+        from: user.name,
         channel: user.channelName
     }
     client.send(JSON.stringify(enteringMsg));
@@ -121,26 +130,31 @@ var checkMsgType = function (msgObj) {
         console.log(msgObj.channels);
         for (var i = 0; i < msgObj.channels.length; i++) {
             displayChannel(msgObj.channels[i]);
+            console.log(msgObj.channels[i].history);
+            for (var histIndex = 0;  histIndex < msgObj.channels[i].history.length; histIndex++) {
+                displayMsg(msgObj.channels.history[histIndex]);
+            }
         };
     }
-    else if (msgType === "create") {
+    else if (msgType === 'create') {
         console.log('creating');
         console.log(msgObj);
     }
-    else if (msgType === "joining") {
+    else if (msgType === 'joining') {
         serverAlert(msgObj);
     }
-    else if (msgType === "leaving") {
+    else if (msgType === 'leaving') {
         serverAlert(msgObj);
     }
-    else if (msgType === "entering") {
+    else if (msgType === 'entering') {
         displayOnlineUser(msgObj);
     }
     else if (msgType === 'exiting') {
         serverAlert(msgObj);
         removeOfflineUser(msgObj);
     }
-    else if (msgType === "msg") {
+    else if (msgType === 'msg') {
+        console.log(msgObj);
         displayMsg(msgObj);
     }
     else if (msgType === 'channel') {
@@ -170,7 +184,7 @@ var checkMsgType = function (msgObj) {
 // function to add unique id to element for correct eventlistener use
 var addListener = function (elemId) {
     var joinChanLiElement = document.getElementById(elemId);
-    joinChanLiElement.addEventListener("click", function () {
+    joinChanLiElement.addEventListener('click', function () {
         console.log(this);
         joinChannel(joinChanLiElement.innerText);
     });
@@ -198,16 +212,16 @@ var serverAlert = function (msgObj) {
     console.log(message);
     var now = moment()
         .format('h:mm a');
-    var inset = document.getElementById("inset");
-    var msgDiv = document.createElement("div");
+    var inset = document.getElementById('inset');
+    var msgDiv = document.createElement('div');
     msgDiv.setAttribute('class', 'chatter')
-    var msgName = document.createElement("span");
-    msgName.setAttribute("class", "name");
-    var msgTime = document.createElement("span");
-    msgTime.setAttribute("class", "time");
+    var msgName = document.createElement('span');
+    msgName.setAttribute('class', 'name');
+    var msgTime = document.createElement('span');
+    msgTime.setAttribute('class', 'time');
     msgTime.innerHTML = now;
-    var msgHolder = document.createElement("div");
-    msgHolder.setAttribute("class", "alert");
+    var msgHolder = document.createElement('div');
+    msgHolder.setAttribute('class', 'alert');
     msgHolder.innerHTML = message;
     msgDiv.appendChild(msgName);
     msgDiv.appendChild(msgTime);
@@ -219,19 +233,21 @@ var serverAlert = function (msgObj) {
 
 // display as user msgs
 var displayMsg = function (msgObj) {
+    console.log('INSIDE DISPLAY ON CLIENT');
+    console.log(msgObj);
     var now = moment()
         .format('h:mm a');
-    var inset = document.getElementById("inset");
-    var msgDiv = document.createElement("div");
+    var inset = document.getElementById('inset');
+    var msgDiv = document.createElement('div');
     msgDiv.setAttribute('class', 'chatter')
-    var msgName = document.createElement("span");
-    msgName.setAttribute("class", "name");
+    var msgName = document.createElement('span');
+    msgName.setAttribute('class', 'name');
     msgName.innerHTML = msgObj.from;
-    var msgTime = document.createElement("span");
-    msgTime.setAttribute("class", "time");
+    var msgTime = document.createElement('span');
+    msgTime.setAttribute('class', 'time');
     msgTime.innerHTML = now;
-    var msgHolder = document.createElement("div");
-    msgHolder.setAttribute("class", "message");
+    var msgHolder = document.createElement('div');
+    msgHolder.setAttribute('class', 'message');
     msgHolder.innerHTML = msgObj.msg;
     msgDiv.appendChild(msgName);
     msgDiv.appendChild(msgTime);
