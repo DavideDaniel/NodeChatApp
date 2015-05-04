@@ -15,4 +15,5 @@ TODO
 * [ ] Flesh out message class
 * [ ] Users based on channel you're in
 * [ ] Chat history based on channel you're in
+* [ ] Tests!
 
