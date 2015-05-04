@@ -300,25 +300,13 @@ server.on('connection', function (connection) {
     console.log('Server: ' + userDb.length + ' user/s online.');
     // client on message
     user.client.on('message', function (data) {
-        //     if (user.connected === false) {
-        //     for (var i = 0; i < channelList.length; i++) {
-        //         server.clients.forEach(function each(client){
-        //             if(client != user){
-        //                 // sendChannel(channelList[i]);    
-        //             }
-        //         })
-
-        //     };
-        // }
         var msgObj = JSON.parse(data);
+        // save message to channel history
         channelList.forEach(function each(channel) {
             if (channel.name === user.channelName && msgObj.type === 'msg') {
-                // channel.history.push(msgObj)
-                // console.log(channel.history);
                 channel.save(msgObj)
             }
         });
-        // checkMsgType(msgObj, user);
         newMessageFunc(msgObj, user);
 
     });
