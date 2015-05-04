@@ -1,15 +1,18 @@
 ##Chat App
-Still messing around...Using moment & WS Node packages
+Simple chat app using moment & WS Node packages
 
 #####To run
   ---
 1. ```$ npm install```
-2. ```$ node server.js```
+2. ```$ npm start```
 3. ```$ open client.html```
 
 TODO 
 * [x] Clean up files
-* [ ] Fix issue with rendering of messages
-* [ ] Channels need to be reimplimented
-* [ ] Finish styling
+* [x] Fix issue with rendering of messages
+* [x] Channels need to be reimplimented
+* [x] Styling
+* [ ] Flesh out message class
+* [ ] Users based on channel you're in
+* [ ] Chat history based on channel you're in
 
