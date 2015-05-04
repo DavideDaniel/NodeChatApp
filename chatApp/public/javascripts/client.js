@@ -51,7 +51,7 @@ client.addEventListener("open", function (evt) {
 // client message
 client.addEventListener('message', function (message) {
     var msgObj = JSON.parse(message.data);
-    checkMsgType(msgObj);
+    filterMsg(msgObj);
 });
 
 // client close
@@ -122,7 +122,7 @@ var removeOfflineUser = function (msgObj) {
 };
 
 // function to filter message types & determine response
-var checkMsgType = function (msgObj) {
+var filterMsg = function (msgObj) {
     var msgType = msgObj.type;
     console.log(msgType);
     if (msgType === "firstEnter") {
@@ -130,6 +130,7 @@ var checkMsgType = function (msgObj) {
         console.log(msgObj.channels);
         for (var i = 0; i < msgObj.channels.length; i++) {
             displayChannel(msgObj.channels[i]);
+            console.log('HISTORY: ');
             console.log(msgObj.channels[i].history);
             for (var histIndex = 0;  histIndex < msgObj.channels[i].history.length; histIndex++) {
                 displayMsg(msgObj.channels.history[histIndex]);

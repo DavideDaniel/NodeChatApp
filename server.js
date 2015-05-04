@@ -110,7 +110,6 @@ Message.prototype = {
         var msgObj = this.msgObj;
         console.log(msgObj);
         if (this.type === 'firstEntering') {
-            console.log(msgObj);
             user.enter(msgObj);
         }
         else if (this.type === 'exiting') {}
@@ -120,7 +119,6 @@ Message.prototype = {
             newChannelFunc(user, msgObj.msg, channelList.length);
         }
         else if (this.type === 'join') {
-            console.log(msgObj);
             if (user.channelName != msgObj.msg) {
                 user.channelName = msgObj.msg;
                 console.log('JOINING: ' + msgObj.msg);
@@ -206,45 +204,11 @@ var processUser = function (channelArray, user) {
     user.client.send(JSON.stringify(processMsg));
 };
 
-var checkMsgType = function (msgObj, user) {
-    console.log(user.name + ' in channel ' + user.channelName + ' is sending ' + msgObj.type);
-    var msgType = msgObj.type
-    if (msgType === 'firstEntering') {
-        user.enter(msgObj);
-    }
-    else if (msgType === 'exiting') {}
-    else if (msgType === 'creating') {
-        newChannelFunc(user, msgObj.name, channelList.length);
-    }
-    else if (msgType === 'join') {
-        if (user.channelName != msgObj.name) {
-            user.channelName = msgObj.name
-            for (var i = 0; i < channelList.length; i++) {
-                if (user.channelName === channelList[i].name) {
-                    channelList[i].join(user);
-                }
-                else {
-                    channelList[i].leave(user);
-                }
-            }
-        }
-    }
-    else if (msgType === 'msg') {
-        channelList.forEach(function each(channel) {
-            if (channel.name === user.channelName) {
-                user.sendMsg(channel.users, now, msgObj, user); //user
-            }
-        });
-    }
-};
-
 var newChannelFunc = function (user, channelName, chanId) {
     if (channelName != null) {
         channelName = new Channel(channelName, chanId);
         channelList.push(channelName);
-        // console.log(channelList);
         sendChannel(channelName);
-        // createChanPingBack(user, channelName.name, channelName.id);
     };
 };
 
@@ -269,7 +233,6 @@ var sendChannel = function (channel) {
             }
             array.push(miniUser);
         };
-
         minifyUser(userArray[i], miniUserList);
     }
     console.log(miniUserList);

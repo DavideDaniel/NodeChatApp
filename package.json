@@ -4,7 +4,9 @@
   "main": "client.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "npm run start-client & npm run start-server",
+    "start-client": "node ./chatApp/bin/www ",
+    "start-server": "node server.js"
   },
   "author": "",
   "license": "ISC",
