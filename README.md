@@ -1,5 +1,5 @@
 ##Chat App
-Simple chat app using moment & WS Node packages
+Simple chat app using moment & WS Node packages. I'm continuing to work on this but am keeping it simple so that it can be used as a learning tool.
 
 #####To run
   ---
