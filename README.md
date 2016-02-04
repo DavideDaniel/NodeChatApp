@@ -1,19 +1,17 @@
 ##Chat App
-Simple chat app using moment & WS Node packages. I'm continuing to work on this but am keeping it simple so that it can be used as a teaching tool.
+Simple chat app using moment & WS Node packages. Keeping it simple so it can be used as a teaching tool.
 
 #####To run
   ---
 1. ```$ npm install```
 2. ```$ npm start```
-3. ```$ open client.html```
+3. Navigate in browser to http://localhost:3000
 
-TODO 
+TODO
 * [x] Clean up files
 * [x] Fix issue with rendering of messages
-* [x] Channels need to be reimplimented
+* [x] Channels need to be re-implimented
 * [x] Styling
-* [ ] Flesh out message class
+* [ ] Redo message class
 * [ ] Users based on channel you're in
 * [ ] Chat history based on channel you're in
-* [ ] Tests!
-
